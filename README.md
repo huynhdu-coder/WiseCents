@@ -1,13 +1,11 @@
-# WISECENTS
+# WISECENTS 
 
 A full-stack budgeting app with AI-powered financial assistance. Built using:
 
 - React.js + Tailwind CSS (Frontend)
 - Node.js + Express (Backend)
 - PostgreSQL (Database)
-- ChromaDB / FAISS (Vector Search)
 - Chart.js (Data Visualizations)
-- n8n (Automation)
 
 ## Features
 
