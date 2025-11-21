@@ -1,30 +1,22 @@
-const { encryptGCM } = require('../utils/crypto');
-const pool = require('../config/database');
+import { plaidClient } from '../services/plaidService.js';
+import { savePlaidItem } from '../models/plaidItemModel.js';
 
-app.post('/api/plaid/exchange', async (req, res) => {
+export const exchangePublicToken = async (req, res) => {
   try {
-    const { public_token, user_id } = req.body;
+    const { public_token, userId } = req.body;
 
-    const resp = await plaidClient.itemPublicTokenExchange({ public_token });
-    const accessToken = resp.data.access_token;
-    const itemId = resp.data.item_id;
+    const response = await plaidClient.itemPublicTokenExchange({
+      public_token,
+    });
 
-    const { ciphertextB64, iv, tag } = encryptGCM(accessToken);
+    const access_token = response.data.access_token;
+    const item_id = response.data.item_id;
 
-    await pool.query(
-      `INSERT INTO plaid_items (user_id, plaid_item_id, access_token_cipher, access_token_iv, access_token_tag)
-       VALUES ($1, $2, $3, $4, $5)
-       ON CONFLICT (plaid_item_id) DO UPDATE
-         SET access_token_cipher = EXCLUDED.access_token_cipher,
-             access_token_iv     = EXCLUDED.access_token_iv,
-             access_token_tag    = EXCLUDED.access_token_tag`,
-      [user_id, itemId, ciphertextB64, iv, tag]
-    );
+    await savePlaidItem(userId, access_token, item_id);
 
-
-    res.json({ ok: true, item_id: itemId });
-  } catch (err) {
-    console.error('Plaid exchange failed:', err?.response?.data || err.message);
-    res.status(500).json({ ok: false, error: 'Plaid exchange failed' });
+    res.json({ success: true, item_id });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Token exchange failed' });
   }
-});
+};
