@@ -1,22 +1,99 @@
-import { plaidClient } from '../services/plaidService.js';
-import { savePlaidItem } from '../models/plaidItemModel.js';
+import pool from "../database.js";
+import { Configuration, PlaidApi, PlaidEnvironments } from "plaid";
+import CryptoJS from "crypto-js";
 
-export const exchangePublicToken = async (req, res) => {
+const config = new Configuration({
+  basePath: PlaidEnvironments[process.env.PLAID_ENV],
+  baseOptions: {
+    headers: {
+      "PLAID-CLIENT-ID": process.env.PLAID_CLIENT_ID,
+      "PLAID-SECRET": process.env.PLAID_SECRET,
+    },
+  },
+});
+
+const client = new PlaidApi(config);
+
+// Encrypt token
+const encrypt = (text) =>
+  CryptoJS.AES.encrypt(text, process.env.ENCRYPTION_KEY).toString();
+
+const decrypt = (cipher) =>
+  CryptoJS.AES.decrypt(cipher, process.env.ENCRYPTION_KEY).toString(
+    CryptoJS.enc.Utf8
+  );
+
+// 1. Generate Link Token
+export const createLinkToken = async (req, res) => {
   try {
-    const { public_token, userId } = req.body;
-
-    const response = await plaidClient.itemPublicTokenExchange({
-      public_token,
+    const response = await client.linkTokenCreate({
+      user: { client_user_id: String(req.body.userId) },
+      client_name: "WiseCents",
+      products: ["transactions"],
+      language: "en",
+      country_codes: ["US"],
     });
 
-    const access_token = response.data.access_token;
-    const item_id = response.data.item_id;
+    res.json({ link_token: response.data.link_token });
+  } catch (err) {
+    console.error("PLAID LINK ERROR:", err.response?.data || err.message);
+    res.status(400).json({ error: err.response?.data || err.message });
+  }
+};
 
-    await savePlaidItem(userId, access_token, item_id);
+// 2. Exchange public_token → access_token
+export const exchangePublicToken = async (req, res) => {
+  const { public_token, userId } = req.body;
 
-    res.json({ success: true, item_id });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: 'Token exchange failed' });
+  try {
+    const response = await client.itemPublicTokenExchange({ public_token });
+
+    const accessToken = response.data.access_token;
+    const encrypted = encrypt(accessToken);
+
+    await pool.query(
+      "UPDATE users SET access_token = $1 WHERE id = $2",
+      [encrypted, userId]
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("PLAID EXCHANGE ERROR:", err.response?.data || err.message);
+    res.status(400).json({ error: err.response?.data || err.message });
+  }
+};
+
+// 3. Fetch Transactions
+export const getTransactions = async (req, res) => {
+  const { userId } = req.query;
+
+  try {
+    const result = await pool.query(
+      "SELECT access_token FROM users WHERE id = $1",
+      [userId]
+    );
+
+    if (!result.rows[0]?.access_token) {
+      return res.status(400).json({ error: "Missing access token" });
+    }
+
+    const accessToken = decrypt(result.rows[0].access_token);
+
+    const today = new Date().toISOString().split("T")[0];
+    const past = new Date();
+    past.setMonth(past.getMonth() - 1);
+
+    const start = past.toISOString().split("T")[0];
+
+    const response = await client.transactionsGet({
+      access_token: accessToken,
+      start_date: start,
+      end_date: today,
+    });
+
+    res.json({ transactions: response.data.transactions });
+  } catch (err) {
+    console.error("PLAID ERROR:", err.response?.data || err.message);
+    res.status(400).json({ error: err.response?.data || err.message });
   }
 };
