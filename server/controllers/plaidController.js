@@ -1,6 +1,6 @@
 import pool from "../database.js";
 import { Configuration, PlaidApi, PlaidEnvironments } from "plaid";
-import CryptoJS from "crypto-js";
+import { encrypt, decrypt } from "../utils/encryption.js";
 
 const config = new Configuration({
   basePath: PlaidEnvironments[process.env.PLAID_ENV],
@@ -14,14 +14,6 @@ const config = new Configuration({
 
 const client = new PlaidApi(config);
 
-// Encrypt token
-const encrypt = (text) =>
-  CryptoJS.AES.encrypt(text, process.env.ENCRYPTION_KEY).toString();
-
-const decrypt = (cipher) =>
-  CryptoJS.AES.decrypt(cipher, process.env.ENCRYPTION_KEY).toString(
-    CryptoJS.enc.Utf8
-  );
 
 // 1. Generate Link Token
 export const createLinkToken = async (req, res) => {
@@ -48,12 +40,11 @@ export const exchangePublicToken = async (req, res) => {
   try {
     const response = await client.itemPublicTokenExchange({ public_token });
 
-    const accessToken = response.data.access_token;
-    const encrypted = encrypt(accessToken);
+    const encryptedToken = encrypt(response.data.access_token);
 
     await pool.query(
       "UPDATE users SET access_token = $1 WHERE id = $2",
-      [encrypted, userId]
+      [encryptedToken, userId]
     );
 
     res.json({ success: true });
