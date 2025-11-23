@@ -21,7 +21,7 @@ export default function Reports() {
       setTransactions(data.transactions || []);
     } catch (err) {
       console.error("Error fetching transactions:", err);
-      setError("Unable to fetch transactions. Please ensure your backend is running.");
+      setError("Unable to fetch transactions. Server may be unavailable.");
     } finally {
       setLoading(false);
     }
@@ -101,7 +101,7 @@ export default function Reports() {
           </h2>
           <p className="text-gray-700 leading-relaxed">
             Based on these transactions, WiseCents AI can help you summarize
-            spending patterns and identify savings opportunities.
+            spending patterns and identify savings opportunities. TEST
           </p>
           <button
             onClick={() => alert("AI summary coming soon! 🤖")}
