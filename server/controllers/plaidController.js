@@ -1,4 +1,4 @@
-import pool from "../database.js";
+import pool from "../config/database.js";
 import { Configuration, PlaidApi, PlaidEnvironments } from "plaid";
 import { encrypt, decrypt } from "../utils/encryption.js";
 
