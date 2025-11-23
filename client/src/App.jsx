@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import Chat from "./pages/Chat";
 import Reports from "./pages/Reports.jsx";
 import Settings from "./pages/Settings";
+import BankConnect from "./pages/BankConnect";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="chat" element={<Chat />} />       {/* /dashboard/chat */}
           <Route path="reports" element={<Reports />} /> {/* /dashboard/reports */}
           <Route path="settings" element={<Settings />} /> {/* /dashboard/settings */}
+          <Route path="bank-connect" element={<BankConnect />} /> {/* /dashboard/bank-connect */}
         </Route>
       </Routes>
     </Router>

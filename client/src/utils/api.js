@@ -1,7 +1,7 @@
-import axios from 'axios';
+export const BACKEND = process.env.REACT_APP_BACKEND;
 
-const api = axios.create({
-  baseURL: 'http://localhost:3000/api/users',
-});
-
-export default api;
+export const API = {
+  createLinkToken: `${BACKEND}/api/plaid/create_link_token`,
+  exchangePublicToken: `${BACKEND}/api/plaid/exchange_public_token`,
+  transactions: `${BACKEND}/api/plaid/transactions`,
+};
