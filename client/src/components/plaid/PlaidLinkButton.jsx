@@ -21,7 +21,7 @@ export default function PlaidLinkButton({ linkToken }) {
     token: linkToken,
     onSuccess: async (public_token, metadata) => {
 
-      const res = await fetch("wisecents-backend-dev-ewbgf0bxgwe9fta2.eastus2-01.azurewebsites.net/api/plaid/exchange_public_token", {
+      const res = await fetch("https//wisecents-backend-dev-ewbgf0bxgwe9fta2.eastus2-01.azurewebsites.net/api/plaid/exchange_public_token", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
