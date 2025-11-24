@@ -1,6 +1,6 @@
 import pool from "../config/database.js";
 import { Configuration, PlaidApi, PlaidEnvironments } from "plaid";
-import { encrypt, decrypt } from "../utils/encryption.js";
+
 
 const config = new Configuration({
   basePath: PlaidEnvironments[process.env.PLAID_ENV],
@@ -36,20 +36,21 @@ export const createLinkToken = async (req, res) => {
 // 2. Exchange public_token → access_token
 export const exchangePublicToken = async (req, res) => {
   const { public_token, userId } = req.body;
-
+  console.log("🔹 Incoming public_token:", public_token);
   try {
     const response = await client.itemPublicTokenExchange({ public_token });
+    console.log("🔹 Exchange Response:", response.data);
 
-    const encryptedToken = encrypt(response.data.access_token);
-
+    const accessToken = response.data.access_token;
     await pool.query(
-      "UPDATE users SET access_token = $1 WHERE id = $2",
-      [encryptedToken, userId]
+      `INSERT INTO plaid_items (user_id, plaid_access_token, plaid_item_id, created_at)
+       VALUES ($1, $2, $3, NOW())`,
+      [userId, accessToken, itemId]
     );
 
     res.json({ success: true });
   } catch (err) {
-    console.error("PLAID EXCHANGE ERROR:", err.response?.data || err.message);
+    console.error("❌ PLAID EXCHANGE ERROR:", err.response?.data || err.message);
     res.status(400).json({ error: err.response?.data || err.message });
   }
 };
@@ -60,15 +61,15 @@ export const getTransactions = async (req, res) => {
 
   try {
     const result = await pool.query(
-      "SELECT access_token FROM users WHERE id = $1",
+      "SELECT plaid_access_token FROM plaid_items WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1",
       [userId]
     );
 
-    if (!result.rows[0]?.access_token) {
-      return res.status(400).json({ error: "Missing access token" });
+    if (!result.rows.length) {
+      return res.status(400).json({ error: "No access token found for this user." });
     }
 
-    const accessToken = decrypt(result.rows[0].access_token);
+    const accessToken = result.rows[0].plaid_access_token;
 
     const today = new Date().toISOString().split("T")[0];
     const past = new Date();
