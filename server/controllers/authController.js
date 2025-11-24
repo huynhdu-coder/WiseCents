@@ -36,7 +36,7 @@ export const login = async (req, res) => {
     const user = await User.findByEmail(email);
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
-    const valid = await User.verifyPassword(password, user.password);
+    const valid = await User.verifyPassword(password);
     if (!valid) return res.status(401).json({ message: "Invalid credentials" });
 
     const token = user.generateToken();
