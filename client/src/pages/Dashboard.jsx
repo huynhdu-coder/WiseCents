@@ -14,7 +14,7 @@ export default function Dashboard() {
       return;
     }
 
-    fetch("http://localhost:5000/api/plaid/create_link_token", {
+    fetch("https://wisecents-backend-dev-ewbgf0bxgwe9fta2.eastus2-01.azurewebsites.net/api/plaid/create_link_token", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
