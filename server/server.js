@@ -7,7 +7,9 @@ import userRoutes from "./routes/userRoutes.js";
 
 const app = express();
 
-app.use(cors());
+app.use(cors({origin: ["http://localhost:3000", "https://victorious-hill-01f04f60f.3.azurestaticapps.net"],
+  methods: "GET,POST,PUT,DELETE",
+  credentials: true}));
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
