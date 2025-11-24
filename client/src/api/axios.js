@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "https://victorious-hill-01f04f60f.3.azurestaticapps.net/api"",
 });
 
 
