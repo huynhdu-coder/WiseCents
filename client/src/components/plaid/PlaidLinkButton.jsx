@@ -14,14 +14,15 @@ import { usePlaidLink } from "react-plaid-link";
 //   alert("Bank account connected!");
 // }
 // });
-export default function PlaidLinkButton({ linkToken }) {
+export default function PlaidLinkButton({ linkToken, onAccountsFetched }) {
   const token = localStorage.getItem("token");
 
   const { open, ready } = usePlaidLink({
     token: linkToken,
     onSuccess: async (public_token, metadata) => {
 
-      const res = await fetch("https://wisecents-backend-dev-ewbgf0bxgwe9fta2.eastus2-01.azurewebsites.net/api/plaid/exchange_public_token", {
+    // Exchange public token → save access_token in DB
+      await fetch("https://wisecents-backend-dev-ewbgf0bxgwe9fta2.eastus2-01.azurewebsites.net/api/plaid/exchange_public_token", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -30,13 +31,21 @@ export default function PlaidLinkButton({ linkToken }) {
         body: JSON.stringify({      public_token}),
     });
 
-    const data = await res.json();
+      //Fetch account data to confirm connection
+      const accountsRes = await fetch("https://wisecents-backend-dev-ewbgf0bxgwe9fta2.eastus2-01.azurewebsites.net/api/plaid/get_accounts", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+      });
 
-    if (data.success) {
-      alert("Bank connected successfully!");
-    } else {
-          alert("Failed to connect bank: " + data.error);
-    }
+    const accounts = await accountsRes.json();
+
+    onAccountsFetched(accounts);
+
+    alert("Bank connected!");
+    
   },
   onExit: (err) => {
     if (err) console.log("Plaid exit error:", err);
