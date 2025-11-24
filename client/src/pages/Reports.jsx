@@ -3,20 +3,29 @@ import React, { useState } from "react";
 export default function Reports() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const USER_ID = 1; 
+
 
   const fetchTransactions = async () => {
     setLoading(true);
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch(
-        `https://wisecents-backend-dev-ewbgf0bxgwe9fta2.eastus2-01.azurewebsites.net/api/plaid/transactions?userId=${USER_ID}`
+        "https://wisecents-backend-dev-ewbgf0bxgwe9fta2.eastus2-01.azurewebsites.net/api/plaid/transactions",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,  // REQUIRED
+          },
+        }
       );
+
       const data = await res.json();
 
-      if (data.transactions) {
-        setTransactions(data.transactions);
+      if (Array.isArray(data)) {
+        setTransactions(data);
       } else {
-        alert("No transactions found or Plaid access token missing.");
+        alert(data.error || "No transactions found.");
       }
     } catch (err) {
       console.error("Error fetching transactions:", err);

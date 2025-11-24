@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import owlLogo from "../assets/owl-logo.png";
 
 export default function Chat() {
@@ -37,11 +37,11 @@ export default function Chat() {
     } else if (lower.includes("spend")) {
       return "🧾 Your top spending category last week was dining out — consider home cooking to save ~$50 monthly!";
     } else if (lower.includes("goal")) {
-      return "🎯 Let’s set a goal! How much do you want to save this month?";
+      return "Let’s set a goal! How much do you want to save this month?";
     } else if (lower.includes("hi") || lower.includes("hello")) {
-      return "👋 Hello again! How can I help you manage your finances today?";
+      return "Hello again! How can I help you manage your finances today?";
     } else {
-      return "🤖 I’m still learning! Try asking about your ‘summary’, ‘savings’, or ‘spending habits’.";
+      return "I’m still learning! Try asking about your ‘summary’, ‘savings’, or ‘spending habits’.";
     }
   };
 

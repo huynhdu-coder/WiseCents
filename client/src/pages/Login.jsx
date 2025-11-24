@@ -1,12 +1,19 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async(e) => {
     e.preventDefault();
-    navigate("/dashboard"); 
+    const res = await api.post("/auth/login", { email, password });
+    login(res.data.user, res.data.token);
+    navigate("/dashboard");
   };
 
   return (
@@ -23,6 +30,9 @@ export default function Login() {
               type="email"
               placeholder="your@gmail.com"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-wisegreen"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            required
             />
           </div>
 
@@ -32,6 +42,9 @@ export default function Login() {
               type="password"
               placeholder="••••••••"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-wisegreen"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
 
@@ -45,8 +58,9 @@ export default function Login() {
 
         <p className="text-gray-500 text-sm text-center mt-6">
           Don’t have an account?{" "}
-          <span className="text-wisegreen font-semibold cursor-pointer hover:underline">
-            Sign up soon
+          <span 
+            onClick={() => navigate("/register")} className="text-wisegreen font-semibold cursor-pointer hover:underline">
+            Sign up
           </span>
         </p>
       </div>
