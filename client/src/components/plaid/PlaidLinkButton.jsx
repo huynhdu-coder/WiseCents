@@ -1,32 +1,47 @@
-import React from "react";
 import { usePlaidLink } from "react-plaid-link";
 
-export default function PlaidLinkButton({ linkToken, userId }) {
+// export default function PlaidLinkButton({ linkToken, userId }) {
+//   const { open, ready } = usePlaidLink({
+//     token: linkToken,
+//     onSuccess: async (public_token, metadata) => {
+//     console.log("PUBLIC TOKEN:", public_token);
+//   await fetch("http://localhost:5000/api/plaid/exchange_public_token", {
+//     method: "POST",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify({ public_token, userId }),
+//   });
+
+//   alert("Bank account connected!");
+// }
+// });
+export default function PlaidLinkButton({ linkToken }) {
+  const token = localStorage.getItem("token");
+
   const { open, ready } = usePlaidLink({
     token: linkToken,
     onSuccess: async (public_token, metadata) => {
-      try {
-        const res = await fetch(
-          "https://wisecents-backend-dev-ewbgf0bxgwe9fta2.eastus2-01.azurewebsites.net/api/plaid/exchange_public_token",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ public_token, userId }),
-          }
-        );
 
-        if (!res.ok) throw new Error("Exchange token failed");
+      const res = await fetch("http://localhost:5000/api/plaid/exchange_public_token", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({      public_token}),
+    });
 
-        alert("✅ Bank account connected successfully!");
-      } catch (err) {
-        console.error("Error exchanging token:", err);
-        alert("❌ Failed to exchange Plaid token.");
-      }
-    },
-    onExit: (err, metadata) => {
-      if (err) console.error("Plaid Link exited with error:", err);
-    },
-  });
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Bank connected successfully!");
+    } else {
+          alert("Failed to connect bank: " + data.error);
+    }
+  },
+  onExit: (err) => {
+    if (err) console.log("Plaid exit error:", err);
+  },
+});
 
   return (
     <button
