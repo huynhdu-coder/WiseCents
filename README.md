@@ -15,10 +15,6 @@ A full-stack budgeting app with AI-powered financial assistance. Built using:
 - AI chatbot for budget insights
 - n8n workflows for reminders
 
-## Setup Instructions
-
-1. Clone this repo
-2. Run `npm install` in `/server` and `/client`
-3. Set up `.env` with DB and API keys
-4. Run backend with `npm run dev` in `/server`
-5. Run frontend with `npm start` in `/client`
+## Hosting Information
+- Our application is hosted via Azure.
+- The rights to view such resources are shared with project team members, along with team advisor. 
