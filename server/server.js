@@ -1,11 +1,22 @@
 import express from "express";
 import cors from "cors";
+import rateLimit from "express-rate-limit";
 import plaidRoutes from "./routes/plaidRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 
 const app = express();
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, 
+  max: 100, 
+  message: { error: 'Too many requests from this IP, please try again later.' },
+  standardHeaders: true, 
+  legacyHeaders: false, 
+});
+
+app.use("/api/", limiter);  
 
 app.use(cors({origin: ["http://localhost:3000", "https://victorious-hill-01f04f60f.3.azurestaticapps.net"],
   methods: "GET,POST,PUT,DELETE",
