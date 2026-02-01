@@ -3,7 +3,7 @@ import cors from "cors";
 import plaidRoutes from "./routes/plaidRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-
+import aiRoutes from "./routes/aiRoutes.js";
 
 const app = express();
 
@@ -15,6 +15,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/plaid", plaidRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.get("/", (req, res) => res.send("WiseCents Backend Running"));
 
