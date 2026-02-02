@@ -17,12 +17,12 @@ const pool = new Pool({
     : { rejectUnauthorized: false },
   max: 20, 
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: 15000,
 });
 
 pool.on('error', (err) => {
   console.error('Unexpected error on idle client', err);
-  process.exit(-1);
+  // process.exit(-1); - commenting this feature out to prevent server crashes, will look into further
 });
 
 export default pool;
