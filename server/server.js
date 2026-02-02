@@ -8,6 +8,22 @@ import aiRoutes from "./routes/aiRoutes.js";
 
 const app = express();
 
+const corsOptions = {
+  origin: [
+    "http://localhost:3000",
+    "https://victorious-hill-01f04f60f.3.azurestaticapps.net"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); 
+
+app.use(express.json());
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
   max: 100, 
@@ -16,12 +32,7 @@ const limiter = rateLimit({
   legacyHeaders: false, 
 });
 
-app.use("/api/", limiter);  
-
-app.use(cors({origin: ["http://localhost:3000", "https://victorious-hill-01f04f60f.3.azurestaticapps.net"],
-  methods: "GET,POST,PUT,DELETE",
-  credentials: true}));
-app.use(express.json());
+app.use("/api/", limiter);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
