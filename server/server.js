@@ -4,6 +4,10 @@ import rateLimit from "express-rate-limit";
 import plaidRoutes from "./routes/plaidRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
+import accountRoutes from "./routes/accountRoutes.js";
+import transactionsRoutes from "./routes/transactionRoutes.js";
+
 import aiRoutes from "./routes/aiRoutes.js";
 
 const app = express();
@@ -37,9 +41,10 @@ app.use("/api/", limiter);
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/plaid", plaidRoutes);
-app.use("/api/ai", aiRoutes);
+app.use("/api/reports", reportRoutes);
+app.use("/api/accounts", accountRoutes);
+app.use("/api/transactions", transactionsRoutes);
 
-app.get("/", (req, res) => res.send("WiseCents Backend Running"));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
