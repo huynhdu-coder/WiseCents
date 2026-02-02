@@ -1,8 +1,6 @@
 import { usePlaidLink } from "react-plaid-link";
+import { API_BASE } from "../../config/apiBase";
 
-
-const API_BASE =
- process.env.REACT_APP_BACKEND || "http://localhost:5000";
 
 export default function PlaidLinkButton({ linkToken, onSuccess }) {
   const token = localStorage.getItem("token");
