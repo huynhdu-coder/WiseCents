@@ -1,57 +1,31 @@
 import { usePlaidLink } from "react-plaid-link";
 
-// export default function PlaidLinkButton({ linkToken, userId }) {
-//   const { open, ready } = usePlaidLink({
-//     token: linkToken,
-//     onSuccess: async (public_token, metadata) => {
-//     console.log("PUBLIC TOKEN:", public_token);
-//   await fetch("http://localhost:5000/api/plaid/exchange_public_token", {
-//     method: "POST",
-//     headers: { "Content-Type": "application/json" },
-//     body: JSON.stringify({ public_token, userId }),
-//   });
 
-//   alert("Bank account connected!");
-// }
-// });
-export default function PlaidLinkButton({ linkToken, onAccountsFetched }) {
+const API_BASE =
+ process.env.REACT_APP_BACKEND || "http://localhost:5000";
+
+export default function PlaidLinkButton({ linkToken, onSuccess }) {
   const token = localStorage.getItem("token");
 
   const { open, ready } = usePlaidLink({
     token: linkToken,
-    onSuccess: async (public_token, metadata) => {
+    onSuccess: async (public_token) => {
+      
+
 
     // Exchange public token → save access_token in DB
-      await fetch("https://wisecents-backend-dev-ewbgf0bxgwe9fta2.eastus2-01.azurewebsites.net/api/plaid/exchange_public_token", {
+      await fetch(`${API_BASE}/api/plaid/exchange_public_token`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({      public_token}),
+        body: JSON.stringify({public_token}),
     });
-
-      //Fetch account data to confirm connection
-      const accountsRes = await fetch("https://wisecents-backend-dev-ewbgf0bxgwe9fta2.eastus2-01.azurewebsites.net/api/plaid/get_accounts", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-      });
-
-    const accounts = await accountsRes.json();
-
-    onAccountsFetched(accounts);
-
-    alert("Bank connected!");
-    
-  },
-  onExit: (err) => {
-    if (err) console.log("Plaid exit error:", err);
-  },
-});
-
+    onSuccess();
+    },
+  });
+  
   return (
     <button
       onClick={() => open()}
