@@ -18,7 +18,7 @@ export default function AIChatWidget() {
     const token = localStorage.getItem("token");
 
     const res = await fetch(
-      "https://wisecents-backend-.../api/ai/chat",
+      "https://wisecents-backend-dev-ewbgf0bxgwe9fta2.eastus2-01.azurewebsites.net/api/ai/chat",
       {
         method: "POST",
         headers: {
@@ -40,7 +40,7 @@ export default function AIChatWidget() {
         onClick={() => setOpen(!open)}
         className="fixed bottom-6 right-6 z-50 bg-white p-3 rounded-full shadow-lg"
       >
-        <img src={owlLogo} className="w-12 h-12" />
+        <img src={owlLogo} className="w-12 h-12" alt="WiseCents AI Assistant" />
       </button>
 
       {/* Chat Window */}
