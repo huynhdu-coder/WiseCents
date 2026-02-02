@@ -1,11 +1,7 @@
 import { useState, useEffect, useCallback} from "react";
 import PlaidLinkButton from "../components/plaid/PlaidLinkButton";
+import { API_BASE } from "../config/apiBase";
 
-const API_BASE =
-  process.env.REACT_APP_BACKEND ??
-  (process.env.NODE_ENV === "development"
-    ? "http://localhost:5000"
-    : "");
 
 export default function Dashboard() {
   const [linkToken, setLinkToken] = useState(null);
