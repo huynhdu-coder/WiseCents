@@ -7,7 +7,6 @@ import userRoutes from "./routes/userRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import accountRoutes from "./routes/accountRoutes.js";
 import transactionsRoutes from "./routes/transactionRoutes.js";
-
 import aiRoutes from "./routes/aiRoutes.js";
 
 const app = express();
@@ -44,7 +43,7 @@ app.use("/api/plaid", plaidRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/accounts", accountRoutes);
 app.use("/api/transactions", transactionsRoutes);
-
+app.use("/api/ai", aiRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
