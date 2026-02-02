@@ -53,9 +53,9 @@ export const exchangePublicToken = async (req, res) => {
   await pool.query(
   `INSERT INTO plaid_items (user_id, plaid_access_token, plaid_item_id)
      VALUES ($1, $2, $3)
-     ON CONFLICT (user_id) DO UPDATE
+     ON CONFLICT (plaid_item_id) DO UPDATE  
      SET plaid_access_token = EXCLUDED.plaid_access_token,
-         plaid_item_id = EXCLUDED.plaid_item_id`,
+         user_id = EXCLUDED.user_id`,  
   [userId, encryptedToken, itemId]
 );
 
@@ -68,7 +68,7 @@ export const exchangePublicToken = async (req, res) => {
 
 // 3. Fetch Transactions
 export const getTransactions = async (req, res) => {
-  const userId  = req.userId;
+  const userId = req.userId;
 
   try {
     const result = await pool.query(
@@ -79,16 +79,22 @@ export const getTransactions = async (req, res) => {
     if (result.rows.length === 0)
       return res.status(400).json({ error: "User has no linked bank accounts" });
 
-    const encrypted = result.rows[0].plaid_access_token;
-    const accessToken = decrypt(encrypted);
+    const allTransactions = [];
+    
+    for (const row of result.rows) {
+      const encrypted = row.plaid_access_token;
+      const accessToken = decrypt(encrypted);
 
-    const response = await client.transactionsGet({
-      access_token: accessToken,
-      start_date: "2022-01-01",
-      end_date: "2025-12-31",
-    });
+      const response = await client.transactionsGet({
+        access_token: accessToken,
+        start_date: "2022-01-01",
+        end_date: "2025-12-31",
+      });
 
-    res.json(response.data.transactions);
+      allTransactions.push(...response.data.transactions);
+    }
+
+    res.json(allTransactions); 
   } catch (err) {
     console.error("GET TRANSACTIONS ERROR:", err.response?.data || err);
     res.status(400).json({ error: err.response?.data || err.message });
@@ -106,17 +112,25 @@ export const getAccounts = async (req, res) => {
       [userId]
     );
 
-    const encrypted = result.rows[0].plaid_access_token;
-    const accessToken = decrypt(encrypted);
+    if (result.rows.length === 0)
+      return res.status(400).json({ error: "User has no linked bank accounts" });
 
-    const response = await client.accountsGet({
-      access_token: accessToken,
-    });
+    const allAccounts = [];
+    
+    for (const row of result.rows) {
+      const encrypted = row.plaid_access_token;
+      const accessToken = decrypt(encrypted);
 
-    res.json(response.data.accounts);
+      const response = await client.accountsGet({
+        access_token: accessToken,
+      });
+
+      allAccounts.push(...response.data.accounts);
+    }
+
+    res.json(allAccounts); 
   } catch (err) {
     console.error("GET ACCOUNTS ERROR:", err.response?.data || err);
     res.status(400).json({ error: err.response?.data || err.message });
   }
 };
-
