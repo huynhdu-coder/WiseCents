@@ -1,23 +1,36 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback} from "react";
 import PlaidLinkButton from "../components/plaid/PlaidLinkButton";
+
+const API_BASE =
+  process.env.REACT_APP_BACKEND || "http://localhost:5000";
 
 export default function Dashboard() {
   const [linkToken, setLinkToken] = useState(null);
   const [accounts, setAccounts] = useState([]);
 
   const token = localStorage.getItem("token");
-  const storedUser = JSON.parse(localStorage.getItem("user"));
-  const userId = storedUser?.user_id;
+  
+  //Fetch accounts function
+  const fetchAccounts = useCallback( async () => {
+    if (!token) return;
+    try{
+      const res = await fetch(`${API_BASE}/api/accounts`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+      },
+    });
+      const data = await res.json();
+      setAccounts(data);
+    } catch (error) {
+      console.error("Error fetching accounts:", error);
+    }
+  }, [token]);
 
   // Fetch Plaid link token
   useEffect(() => {
-    if (!token || !userId) {
-      console.error("Missing token or userId - user not logged in");
-      return;
-    }
+    if (!token) return;
 
-    fetch(
-      "https://wisecents-backend-dev-ewbgf0bxgwe9fta2.eastus2-01.azurewebsites.net/api/plaid/create_link_token",
+    fetch(`${API_BASE}/api/plaid/create_link_token`,
       {
         method: "POST",
         headers: {
@@ -28,11 +41,16 @@ export default function Dashboard() {
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log("Fetched link token:", data.link_token);
         setLinkToken(data.link_token);
       })
-      .catch((err) => console.error("Error fetching link token:", err));
-  }, [token, userId]);
+      .catch(console.error);
+  }, [token]);
+
+
+  // Load accounts on page load
+  useEffect(() => {
+    fetchAccounts();
+  }, [fetchAccounts]);
 
   return (
     <div>
@@ -47,7 +65,7 @@ export default function Dashboard() {
       {linkToken ? (
         <PlaidLinkButton
           linkToken={linkToken}
-          onAccountsFetched={(acc) => setAccounts(acc)}
+          onSuccess={fetchAccounts}
         />
       ) : (
         <p className="text-gray-500">Loading bank connection...</p>
@@ -63,7 +81,7 @@ export default function Dashboard() {
               <p className="font-semibold">{acc.name}</p>
               <p className="text-gray-600 capitalize">{acc.subtype}</p>
               <p className="text-wisegreen font-bold">
-                Balance: ${acc.balances.current}
+                Balance: ${acc.current_balance}
               </p>
             </div>
           ))}

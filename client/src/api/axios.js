@@ -1,7 +1,9 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://wisecents-backend-dev-ewbgf0bxgwe9fta2.eastus2-01.azurewebsites.net/api"
+  baseURL: process.env.REACT_APP_BACKEND
+      ? `${process.env.REACT_APP_BACKEND}/api`
+      : "http://localhost:5000/api",
 });
 
 
