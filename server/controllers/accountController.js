@@ -1,5 +1,4 @@
 import pool from "../config/database.js";
- 
 export const getAccounts = async (req, res) => {
   const result = await pool.query(
     `
@@ -13,7 +12,6 @@ export const getAccounts = async (req, res) => {
   );
   res.json(result.rows);
 };
- 
 export const renameAccount = async (req, res) => {
   await pool.query(
     `
@@ -25,7 +23,6 @@ export const renameAccount = async (req, res) => {
   );
   res.json({ success: true });
 };
- 
 export const hideAccount = async (req, res) => {
   await pool.query(
     `
