@@ -4,11 +4,17 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   
   // Load user on refresh
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
-    if (savedUser) setUser(JSON.parse(savedUser));
+    const token = localStorage.getItem("token");
+
+    if (savedUser && token) {
+      setUser(JSON.parse(savedUser));
+    }
+    setLoading(false);
   }, []);
 
   const login = (user, token) => {
@@ -23,6 +29,8 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  if (loading) return null;
+  
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
       {children}
