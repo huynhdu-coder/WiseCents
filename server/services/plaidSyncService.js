@@ -5,7 +5,7 @@ import { fetchAccountsPlaid } from "./plaidService.js";
 
 
 export async function syncAccounts(userId) {
-  // 1️⃣ Get all Plaid items for the user
+ 
   const itemsRes = await pool.query(
     `
     SELECT plaid_item_id, plaid_access_token
@@ -17,15 +17,15 @@ export async function syncAccounts(userId) {
 
   if (!itemsRes.rows.length) return;
 
-  // 2️⃣ Loop through each Plaid item (bank)
+  
   for (const item of itemsRes.rows) {
     const accessToken = decrypt(item.plaid_access_token);
     const plaidItemId = item.plaid_item_id;
 
-    // 3️⃣ Fetch accounts from Plaid
+    
     const response = await fetchAccountsPlaid(accessToken);
 
-    // 4️⃣ Upsert accounts into DB
+    
     for (const acc of response.data.accounts) {
       await pool.query(
         `
@@ -54,7 +54,7 @@ export async function syncAccounts(userId) {
   }
 }
 export async function syncTransactions(userId) {
-  // 1️⃣ Get all Plaid items (banks) for this user
+
   const itemsRes = await pool.query(
     `
     SELECT plaid_item_id, plaid_access_token, cursor
@@ -66,7 +66,7 @@ export async function syncTransactions(userId) {
 
   if (!itemsRes.rows.length) return;
 
-  // 2️⃣ Loop through each bank
+
   for (const item of itemsRes.rows) {
     const accessToken = decrypt(item.plaid_access_token);
     let cursor = item.cursor || null;
@@ -86,7 +86,7 @@ export async function syncTransactions(userId) {
         has_more,
       } = response.data;
 
-      // 3️⃣ INSERT new transactions
+  
       for (const tx of added) {
         await pool.query(
           `
@@ -117,7 +117,7 @@ export async function syncTransactions(userId) {
         );
       }
 
-      // 4️⃣ UPDATE modified transactions
+
       for (const tx of modified) {
         await pool.query(
           `
@@ -139,7 +139,7 @@ export async function syncTransactions(userId) {
         );
       }
 
-      // 5️⃣ DELETE removed transactions
+
       for (const tx of removed) {
         await pool.query(
           `
@@ -154,7 +154,6 @@ export async function syncTransactions(userId) {
       hasMore = has_more;
     }
 
-    // 6️⃣ Save cursor per bank
     await pool.query(
       `
       UPDATE plaid_items
