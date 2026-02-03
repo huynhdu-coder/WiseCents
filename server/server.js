@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import rateLimit from "express-rate-limit";
 import plaidRoutes from "./routes/plaidRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -7,13 +8,35 @@ import reportRoutes from "./routes/reportRoutes.js";
 import accountRoutes from "./routes/accountRoutes.js";
 import transactionsRoutes from "./routes/transactionRoutes.js";
 
+import aiRoutes from "./routes/aiRoutes.js";
 
 const app = express();
 
-app.use(cors({origin: ["http://localhost:3000", "https://victorious-hill-01f04f60f.3.azurestaticapps.net"],
-  methods: "GET,POST,PUT,DELETE",
-  credentials: true}));
+const corsOptions = {
+  origin: [
+    "http://localhost:3000",
+    "https://victorious-hill-01f04f60f.3.azurestaticapps.net"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); 
+
 app.use(express.json());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, 
+  max: 100, 
+  message: { error: 'Too many requests from this IP, please try again later.' },
+  standardHeaders: true, 
+  legacyHeaders: false, 
+});
+
+app.use("/api/", limiter);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);

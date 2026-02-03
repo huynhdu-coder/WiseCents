@@ -40,6 +40,7 @@ export const exchangePublicToken = async (req, res) => {
       ]
     );
 
+
     /* Initial sync */
     await syncAccounts(req.userId);
     await syncTransactions(req.userId);
@@ -49,3 +50,4 @@ export const exchangePublicToken = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
+
