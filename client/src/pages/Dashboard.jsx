@@ -3,6 +3,7 @@ import PlaidLinkButton from "../components/plaid/PlaidLinkButton";
 import { API_BASE } from "../config/apiBase";
 
 
+
 export default function Dashboard() {
   const [linkToken, setLinkToken] = useState(null);
   const [accounts, setAccounts] = useState([]);
@@ -86,6 +87,8 @@ export default function Dashboard() {
           ))}
         </div>
       )}
+    
+
     </div>
   );
 }

@@ -20,7 +20,7 @@ export const register = async (req, res) => {
 
     res.status(201).json({ 
       token,
-      user: newUser 
+      user: newUser.toPublicJSON()
     });
 
   } catch (err) {
@@ -43,7 +43,7 @@ export const login = async (req, res) => {
 
     res.json({ 
       token,
-      user 
+      user : user.toPublicJSON()
     });
 
   } catch (err) {

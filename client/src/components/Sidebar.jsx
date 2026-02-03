@@ -11,6 +11,7 @@ export default function Sidebar() {
         <NavLink to="/dashboard" end className={navClass}>Dashboard</NavLink>
         <NavLink to="/dashboard/reports" className={navClass}>Reports</NavLink>
         <NavLink to="/dashboard/chat" className={navClass}>AI Chat</NavLink>
+        <NavLink to="/dashboard/charts" className={navClass}>Charts</NavLink>
         <NavLink to="/dashboard/settings" className={navClass}>Settings</NavLink>
       </nav>
     </aside>

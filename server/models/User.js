@@ -71,6 +71,18 @@ class User {
       { expiresIn: "7d" }
     );
   }
+  toPublicJSON() {
+    return {
+      user_id: this.user_id,
+      email: this.email,
+      first_name: this.first_name,
+      last_name: this.last_name,
+      phone: this.phone,
+      dob: this.dob,
+      is_admin: this.is_admin,
+      created_at: this.created_at
+    };
+  }
 }
 
 export default User;

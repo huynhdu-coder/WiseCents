@@ -27,6 +27,7 @@ app.options('*', cors(corsOptions));
 
 app.use(express.json());
 
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
   max: 100, 
@@ -45,7 +46,8 @@ app.use("/api/accounts", accountRoutes);
 app.use("/api/transactions", transactionsRoutes);
 app.use("/api/ai", aiRoutes);
 
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 WiseCents backend running on port ${PORT}`);
+  console.log(`WiseCents backend running on port ${PORT}`);
 });
