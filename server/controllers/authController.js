@@ -24,10 +24,11 @@ export const register = async (req, res) => {
     });
 
   } catch (err) {
+    console.error("=== REGISTER ERROR ===");
+    console.error(err);  
     res.status(500).json({ message: err.message });
   }
 };
-
 
 export const login = async (req, res) => {
   try {
@@ -47,6 +48,8 @@ export const login = async (req, res) => {
     });
 
   } catch (err) {
+    console.error("=== LOGIN ERROR ===");
+    console.error(err);  // ⚠️ Log full error
     res.status(500).json({ message: err.message });
   }
 };

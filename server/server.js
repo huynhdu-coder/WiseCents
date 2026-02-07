@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from "express";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
@@ -46,6 +47,12 @@ app.use("/api/accounts", accountRoutes);
 app.use("/api/transactions", transactionsRoutes);
 app.use("/api/ai", aiRoutes);
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error("=== Backend Error ===");
+  console.error(err.stack || err); // print full error stack
+  res.status(500).json({ message: err.message || "Internal Server Error" });
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
