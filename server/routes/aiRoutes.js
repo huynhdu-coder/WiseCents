@@ -5,7 +5,7 @@ import OpenAI from "openai";
 
 const router = express.Router();
 
-// Azure OpenAI client
+// azure openai
 const openai = new OpenAI({
   apiKey: process.env.AZURE_OPENAI_API_KEY,
   baseURL: `${process.env.AZURE_OPENAI_ENDPOINT}/openai/deployments/${process.env.AZURE_OPENAI_DEPLOYMENT}`,
@@ -17,7 +17,7 @@ router.post("/chat", auth, async (req, res) => {
     const userId = req.userId;
     const { message } = req.body;
 
-    // Fetch recent transactions
+    // fetch recent transactions
     const txResult = await db.query(
       `SELECT category, amount, date
        FROM transactions
@@ -27,12 +27,12 @@ router.post("/chat", auth, async (req, res) => {
       [userId]
     );
 
-    // Summarize for AI (VERY IMPORTANT)
+    // basic data summarization
     const txSummary = txResult.rows
       .map(t => `${t.category}: $${t.amount}`)
       .join("\n");
 
-    // AI prompt
+    // ai prompt 
     const completion = await openai.chat.completions.create({
       messages: [
         {
