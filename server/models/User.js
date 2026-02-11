@@ -15,7 +15,6 @@ class User {
     this.created_at = row.created_at;
   }
 
-  // 🔹 Find user by email
   static async findByEmail(email) {
     const result = await pool.query(
       "SELECT * FROM users WHERE email = $1 LIMIT 1",
@@ -26,7 +25,6 @@ class User {
     return new User(result.rows[0]);
   }
 
-  // 🔹 Find user by ID
   static async findById(id) {
     const result = await pool.query(
       "SELECT * FROM users WHERE user_id = $1 LIMIT 1",
@@ -37,7 +35,6 @@ class User {
     return new User(result.rows[0]);
   }
 
-  // 🔹 Create new user
   static async create({
     first_name,
     last_name,
@@ -58,12 +55,10 @@ class User {
     return new User(result.rows[0]);
   }
 
-  // 🔹 Password validation
   async verifyPassword(plainPassword) {
     return bcrypt.compare(plainPassword, this.password);
   }
 
-  // 🔹 Generate JWT token
   generateToken() {
     return jwt.sign(
       { userId: this.user_id },
