@@ -1,3 +1,5 @@
+import User from "../models/User.js";
+
 export const getProfile = async (req, res) => {
   const user = req.user;
 
@@ -8,6 +10,37 @@ export const getProfile = async (req, res) => {
     email: user.email,
     phone: user.phone,
     dob: user.dob,
-    is_admin: user.is_admin
+    is_admin: user.is_admin,
+    primary_intent: user.primary_intent,
+    advice_style: user.advice_style,
+    change_tolerance: user.change_tolerance
   });
+};
+
+export const updatePreferences = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { primary_intent, advice_style, change_tolerance } = req.body;
+
+    const updatedUser = await User.updatePreferences(userId, {
+      primary_intent,
+      advice_style,
+      change_tolerance
+    });
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({
+      message: "Preferences updated successfully",
+      preferences: {
+        primary_intent: updatedUser.primary_intent,
+        advice_style: updatedUser.advice_style,
+        change_tolerance: updatedUser.change_tolerance
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
