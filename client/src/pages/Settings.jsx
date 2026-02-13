@@ -1,4 +1,3 @@
-// client/src/pages/Settings.jsx
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 
@@ -12,7 +11,6 @@ export default function Settings() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    // Load current preferences
     api.get('/user/profile')
       .then(res => {
         setPreferences({
@@ -44,8 +42,6 @@ export default function Settings() {
       <h1 className="text-2xl font-bold text-wisegreen mb-4">AI Preferences</h1>
       
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
-        
-        {/* Primary Intent */}
         <div className="mb-6">
           <label className="block text-gray-700 font-semibold mb-2">
             What's your primary financial goal?
@@ -63,8 +59,6 @@ export default function Settings() {
             <option value="retirement_planning">Retirement Planning</option>
           </select>
         </div>
-
-        {/* Advice Style */}
         <div className="mb-6">
           <label className="block text-gray-700 font-semibold mb-2">
             How should the AI advisor communicate?
@@ -81,8 +75,6 @@ export default function Settings() {
             <option value="casual">Casual & Friendly</option>
           </select>
         </div>
-
-        {/* Change Tolerance */}
         <div className="mb-6">
           <label className="block text-gray-700 font-semibold mb-2">
             How aggressive should budget recommendations be?
