@@ -39,7 +39,7 @@ export default function Settings() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold text-wisegreen mb-4">AI Preferences</h1>
+      <h1 className="text-2xl font-bold text-wisegreen mb-4">User Settings</h1>
       
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
         <div className="mb-6">

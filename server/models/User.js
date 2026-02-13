@@ -18,7 +18,6 @@ class User {
     this.created_at = row.created_at;
   }
 
-  // 🔹 Find user by email
   static async findByEmail(email) {
     const result = await pool.query(
       "SELECT * FROM users WHERE email = $1 LIMIT 1",
@@ -29,7 +28,6 @@ class User {
     return new User(result.rows[0]);
   }
 
-  // 🔹 Find user by ID
   static async findById(id) {
     const result = await pool.query(
       "SELECT * FROM users WHERE user_id = $1 LIMIT 1",
@@ -40,7 +38,6 @@ class User {
     return new User(result.rows[0]);
   }
 
-  // 🔹 Create new user
   static async create({
     first_name,
     last_name,
@@ -68,7 +65,6 @@ class User {
     return new User(result.rows[0]);
   }
 
-  // 🔹 Update user preferences
   static async updatePreferences(userId, { primary_intent, advice_style, change_tolerance }) {
     const result = await pool.query(
       `UPDATE users
@@ -83,6 +79,22 @@ class User {
 
     if (result.rows.length === 0) return null;
     return new User(result.rows[0]);
+  }
+
+  toPublicJSON() {
+    return {
+      user_id: this.user_id,
+      first_name: this.first_name,
+      last_name: this.last_name,
+      email: this.email,
+      phone: this.phone,
+      dob: this.dob,
+      is_admin: this.is_admin,
+      primary_intent: this.primary_intent,
+      advice_style: this.advice_style,
+      change_tolerance: this.change_tolerance,
+      created_at: this.created_at,
+    };
   }
 
   async verifyPassword(plainPassword) {
