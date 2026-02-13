@@ -1,7 +1,7 @@
 import express from "express";
 import auth from "../middleware/auth.js";
-import db from "../config/database.js";
 import OpenAI from "openai";
+import prisma from "../config/prisma.js";
 
 const router = express.Router();
 
@@ -12,47 +12,46 @@ const openai = new OpenAI({
   defaultQuery: { "api-version": "2024-02-15-preview" }
 });
 
+router.get("/test", async (_req, res) => {
+  try {
+    const userCount = await prisma.users.count();
+    res.json({ ok: true, userCount });
+  } catch (err) {
+    console.error("PRISMA TEST ERROR:", err);
+    res.status(500).json({ ok: false, error: String(err?.message || err) });
+  }
+});
+
 router.post("/chat", auth, async (req, res) => {
   try {
     const userId = req.userId;
     const { message } = req.body;
 
     // fetch recent transactions
-    const txResult = await db.query(
-      `SELECT category, amount, date
-       FROM transactions
-       WHERE user_id = $1
-       ORDER BY date DESC
-       LIMIT 25`,
-      [userId]
-    );
+    const tx = await prisma.transactions.findMany({
+      where: { user_id: userId },
+      select: { category: true, amount: true },
+      orderBy: { date: "desc" },
+      take: 25
+    });
 
     // basic data summarization
-    const txSummary = txResult.rows
+    const summary = tx
       .map(t => `${t.category}: $${t.amount}`)
       .join("\n");
 
     // ai prompt 
     const completion = await openai.chat.completions.create({
+      model: process.env.AZURE_OPENAI_DEPLOYMENT,
       messages: [
-        {
-          role: "system",
-          content: "You are WiseCents, a helpful financial assistant for college students."
-        },
-        {
-          role: "assistant",
-          content: `Recent transactions:\n${txSummary}`
-        },
-        {
-          role: "user",
-          content: message
-        }
+        { role: "system", content: "You are WiseCents, a helpful financial assistant for college students." },
+        { role: "assistant", content: `Recent transactions:\n${Summary}` },
+        { role: "user", content: message }
       ]
     });
 
-    res.json({
-      reply: completion.choices[0].message.content
-    });
+    res.json({ reply: completion.choices[0].message.content });
+    
   } catch (err) {
     console.error("AI CHAT ERROR:", err);
     res.status(500).json({ error: "AI chat failed" });

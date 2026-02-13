@@ -5,6 +5,9 @@ export const register = async (req, res) => {
     const { first_name, last_name, email, password, phone, dob } = req.body;
 
     const existing = await User.findByEmail(email);
+    console.log("LOGIN DEBUG email:", email);
+    console.log("LOGIN DEBUG user found?:", !!user);
+    if (user) console.log("LOGIN DEBUG user_id:", user.user_id);
     if (existing) return res.status(400).json({ message: "Email already exists" });
 
     const newUser = await User.create({

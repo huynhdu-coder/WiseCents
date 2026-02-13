@@ -1,3 +1,4 @@
 1. Investigate local errors: dashboard.jsx, plain link token etc 
-2. Investigate openai chat, review package.json and ask clarifying questions
-3. Look into the .yml files at the top and what they do
+2. Move away from Typescript, Prisma ORM has been implemented on airoutes. 
+3. Look into how sequelize is used within our APP right now
+4. Fix Bank_accounts relation and look into JWT authentication token error
