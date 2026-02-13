@@ -15,6 +15,7 @@ class User {
     this.primary_intent = row.primary_intent;
     this.advice_style = row.advice_style;
     this.change_tolerance = row.change_tolerance;
+    this.ai_data_consent = row.ai_data_consent;
     this.created_at = row.created_at;
   }
 
@@ -23,7 +24,6 @@ class User {
       "SELECT * FROM users WHERE email = $1 LIMIT 1",
       [email]
     );
-
     if (result.rows.length === 0) return null;
     return new User(result.rows[0]);
   }
@@ -33,24 +33,17 @@ class User {
       "SELECT * FROM users WHERE user_id = $1 LIMIT 1",
       [id]
     );
-
     if (result.rows.length === 0) return null;
     return new User(result.rows[0]);
   }
 
   static async create({
-    first_name,
-    last_name,
-    email,
-    password,
-    phone,
-    dob,
+    first_name, last_name, email, password, phone, dob,
     primary_intent = 'general_budgeting',
     advice_style = 'balanced',
     change_tolerance = 'moderate'
   }) {
     const hashed = await bcrypt.hash(password, 10);
-
     const result = await pool.query(
       `INSERT INTO users (
         first_name, last_name, email, password, phone, dob, is_admin,
@@ -61,7 +54,6 @@ class User {
       [first_name, last_name, email, hashed, phone, dob,
        primary_intent, advice_style, change_tolerance]
     );
-
     return new User(result.rows[0]);
   }
 
@@ -76,7 +68,20 @@ class User {
        RETURNING *`,
       [primary_intent, advice_style, change_tolerance, userId]
     );
+    if (result.rows.length === 0) return null;
+    return new User(result.rows[0]);
+  }
 
+  // 🔹 Update AI data consent
+  static async updateConsent(userId, ai_data_consent) {
+    const result = await pool.query(
+      `UPDATE users
+       SET ai_data_consent = $1,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE user_id = $2
+       RETURNING *`,
+      [ai_data_consent, userId]
+    );
     if (result.rows.length === 0) return null;
     return new User(result.rows[0]);
   }
@@ -93,6 +98,7 @@ class User {
       primary_intent: this.primary_intent,
       advice_style: this.advice_style,
       change_tolerance: this.change_tolerance,
+      ai_data_consent: this.ai_data_consent,
       created_at: this.created_at,
     };
   }
