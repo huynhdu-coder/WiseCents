@@ -43,7 +43,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/plaid", plaidRoutes);
 app.use("/api/reports", reportRoutes);
-app.use("/api/accounts", accountRoutes);
+// app.use("/api/accounts", accountRoutes);
 app.use("/api/transactions", transactionsRoutes);
 app.use("/api/ai", aiRoutes);
 

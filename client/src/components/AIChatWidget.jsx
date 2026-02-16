@@ -18,7 +18,7 @@ export default function AIChatWidget() {
     const token = localStorage.getItem("token");
 
     const res = await fetch(
-      "https://wisecents-backend-dev-ewbgf0bxgwe9fta2.eastus2-01.azurewebsites.net/api/ai/chat",
+      "http://localhost:5000/api/ai/chat",
       {
         method: "POST",
         headers: {

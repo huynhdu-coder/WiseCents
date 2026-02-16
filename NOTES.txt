@@ -2,3 +2,4 @@
 2. Move away from Typescript, Prisma ORM has been implemented on airoutes. 
 3. Look into how sequelize is used within our APP right now
 4. Fix Bank_accounts relation and look into JWT authentication token error
+5. Downgrade Prisma v7 to v5.

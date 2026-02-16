@@ -45,7 +45,7 @@ router.post("/chat", auth, async (req, res) => {
       model: process.env.AZURE_OPENAI_DEPLOYMENT,
       messages: [
         { role: "system", content: "You are WiseCents, a helpful financial assistant for college students." },
-        { role: "assistant", content: `Recent transactions:\n${Summary}` },
+        { role: "assistant", content: `Recent transactions:\n${summary}` },
         { role: "user", content: message }
       ]
     });
