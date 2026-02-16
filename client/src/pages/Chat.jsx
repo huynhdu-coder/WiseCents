@@ -17,8 +17,6 @@ export default function Chat() {
 
     const userMessage = { sender: "user", text: input };
     setMessages((prev) => [...prev, userMessage]);
-
-    // Add delayed "AI" response
     setTimeout(() => {
       const botReply = { sender: "bot", text: generateBotResponse(input) };
       setMessages((prev) => [...prev, botReply]);
