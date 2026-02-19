@@ -26,7 +26,6 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 
-startWeeklySync();
 
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); 
@@ -52,6 +51,8 @@ app.use("/api/accounts", accountRoutes);
 app.use("/api/transactions", transactionsRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/goals", goalRoutes);
+
+startWeeklySync();
 
 
 const PORT = process.env.PORT || 5000;
