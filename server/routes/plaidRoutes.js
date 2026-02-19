@@ -2,14 +2,16 @@ import express from "express";
 import {
   createLinkToken,
   exchangePublicToken,
-
 } from "../controllers/plaidController.js";
+import { handlePlaidWebhook } from "../controllers/plaidWebhookController.js";
 import auth from "../middleware/auth.js";
 
 const router = express.Router();
 
+
 router.post("/create_link_token", auth, createLinkToken);
 router.post("/exchange_public_token", auth, exchangePublicToken);
+router.post("/webhook", handlePlaidWebhook);
 
 
 // Save Plaid transactions to PostgreSQL

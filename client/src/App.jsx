@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route,} from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import PrivacyConsentModal from "./components/PrivacyConsentModal";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -14,9 +15,17 @@ import Charts from "./pages/Charts";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
+// Rendered inside AuthProvider so it can read/write consent state from context
+function ConsentModal() {
+  const { showConsentModal, handleConsent } = useAuth();
+  if (!showConsentModal) return null;
+  return <PrivacyConsentModal onConsent={handleConsent} />;
+}
+
 export default function App() {
   return (
     <AuthProvider>
+      <ConsentModal />
       <BrowserRouter>
         <Routes>
 
@@ -26,20 +35,20 @@ export default function App() {
           <Route path="/register" element={<Register />} />
 
           {/* Protected dashboard routes - wrapped in DashboardLayout */}
-          <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <DashboardLayout />
-                </ProtectedRoute>
-              }
-            >
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<Dashboard />} />        {/* /dashboard */}
             <Route path="chat" element={<Chat />} />       {/* /dashboard/chat */}
             <Route path="reports" element={<Reports />} /> {/* /dashboard/reports */}
-            <Route path="charts" element={<Charts />} /> {/* /dashboard/charts */}
+            <Route path="charts" element={<Charts />} />   {/* /dashboard/charts */}
             <Route path="settings" element={<Settings />} /> {/* /dashboard/settings */}
-            </Route>
+          </Route>
 
         </Routes>
       </BrowserRouter>
