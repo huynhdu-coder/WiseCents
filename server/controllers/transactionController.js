@@ -1,29 +1,42 @@
-import pool from "../config/database.js";
+import prisma from "../config/prisma.js";
 
 export const getTransactions = async (req, res) => {
   try {
-    const result = await pool.query(
-      `
-      SELECT
-        t.transaction_id,
-        t.name,
-        t.amount,
-        t.category,
-        t.date,
-        ba.name AS account_name,
-        ba.subtype AS account_subtype
-      FROM transactions t
-      JOIN bank_accounts ba
-        ON t.account_id = ba.account_id
-      WHERE t.user_id = $1
-        AND ba.is_hidden = false
-      ORDER BY t.date DESC
-      LIMIT 100
-      `,
-      [req.userId]
-    );
+    const userId = req.userId;
 
-    res.json(result.rows);
+    const transactions = await prisma.transactions.findMany({
+      where: {
+        user_id: userId,
+        bank_accounts: {
+          is_hidden: false,
+        },
+      },
+      orderBy: {
+        date: "desc",
+      },
+      take: 100,
+      include: {
+        bank_accounts: {
+          select: {
+            name: true,
+            subtype: true,
+          },
+        },
+      },
+    });
+
+    const formatted = transactions.map((tx) => ({
+      transaction_id: tx.id, 
+      name: tx.name,
+      amount: Number(tx.amount), 
+      category: tx.category_primary || "Uncategorized",
+      date: tx.date,
+      account_name: tx.bank_accounts?.name,
+      account_subtype: tx.bank_accounts?.subtype,
+    }));
+
+    res.json(formatted);
+
   } catch (err) {
     console.error("GET TRANSACTIONS ERROR:", err);
     res.status(500).json({ error: "Failed to fetch transactions" });

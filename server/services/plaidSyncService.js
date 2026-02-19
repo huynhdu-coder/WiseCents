@@ -1,166 +1,157 @@
-import pool from "../config/database.js";
+import prisma from "../config/prisma.js";
 import { decrypt } from "../utils/encryption.js";
 import { plaidClient } from "./plaidClient.js";
-import { fetchAccountsPlaid } from "./plaidService.js";
 
+export async function syncTransactions(userId) {
+  try {
+    const items = await prisma.plaid_items.findMany({
+      where: { user_id: userId },
+    });
 
-export async function syncAccounts(userId) {
- 
-  const itemsRes = await pool.query(
-    `
-    SELECT plaid_item_id, plaid_access_token
-    FROM plaid_items
-    WHERE user_id = $1
-    `,
-    [userId]
-  );
+    if (!items.length) return;
 
-  if (!itemsRes.rows.length) return;
+    // Build account map ONCE
+    const accounts = await prisma.bank_accounts.findMany({
+      where: { user_id: userId },
+      select: {
+        account_id: true,
+        plaid_account_id: true,
+      },
+    });
 
-  
-  for (const item of itemsRes.rows) {
-    const accessToken = decrypt(item.plaid_access_token);
-    const plaidItemId = item.plaid_item_id;
+    const accountMap = {};
+    accounts.forEach(acc => {
+      accountMap[acc.plaid_account_id] = acc.account_id;
+    });
 
-    
-    const response = await fetchAccountsPlaid(accessToken);
+    for (const item of items) {
+      const accessToken = decrypt(item.plaid_access_token);
+      let cursor = item.cursor || null;
+      let hasMore = true;
 
-    
-    for (const acc of response.data.accounts) {
-      await pool.query(
-        `
-        INSERT INTO bank_accounts
-        (user_id, plaid_item_id, plaid_account_id,
-         name, type, subtype,
-         current_balance, available_balance)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
-        ON CONFLICT (plaid_account_id)
-        DO UPDATE SET
-          current_balance = EXCLUDED.current_balance,
-          available_balance = EXCLUDED.available_balance
-        `,
-        [
-          userId,
-          plaidItemId,
-          acc.account_id,
-          acc.name,
-          acc.type,
-          acc.subtype,
-          acc.balances.current,
-          acc.balances.available,
-        ]
-      );
+      while (hasMore) {
+        const response = await plaidClient.transactionsSync({
+          access_token: accessToken,
+          cursor,
+        });
+
+        const { added, modified, removed, next_cursor, has_more } =
+          response.data;
+
+        // ---------------- ADDED ----------------
+        for (const tx of added) {
+          const accountId = accountMap[tx.account_id];
+          if (!accountId) continue;
+
+          await prisma.transactions.upsert({
+            where: { transaction_id: tx.transaction_id },
+            update: {
+              name: tx.name,
+              amount: tx.amount,
+              date: new Date(tx.date),
+              category_primary:
+                tx.personal_finance_category?.primary || null,
+              category_detailed:
+                tx.personal_finance_category?.detailed || null,
+            },
+            create: {
+              transaction_id: tx.transaction_id,
+              user_id: userId,
+              account_id: accountId,
+              name: tx.name,
+              amount: tx.amount,
+              date: new Date(tx.date),
+              category_primary:
+                tx.personal_finance_category?.primary || null,
+              category_detailed:
+                tx.personal_finance_category?.detailed || null,
+            },
+          });
+        }
+
+        // ---------------- MODIFIED ----------------
+        for (const tx of modified) {
+          await prisma.transactions.update({
+            where: { transaction_id: tx.transaction_id },
+            data: {
+              name: tx.name,
+              amount: tx.amount,
+              date: new Date(tx.date),
+              category_primary:
+                tx.personal_finance_category?.primary || null,
+              category_detailed:
+                tx.personal_finance_category?.detailed || null,
+            },
+          }).catch(() => {});
+        }
+
+        // ---------------- REMOVED ----------------
+        for (const tx of removed) {
+          await prisma.transactions.delete({
+            where: { transaction_id: tx.transaction_id },
+          }).catch(() => {});
+        }
+
+        cursor = next_cursor;
+        hasMore = has_more;
+      }
+
+      // Save updated cursor
+      await prisma.plaid_items.update({
+        where: { plaid_item_id: item.plaid_item_id },
+        data: { cursor },
+      });
     }
+
+  } catch (error) {
+    console.error("Transaction sync error:", error);
+    throw error;
   }
 }
-export async function syncTransactions(userId) {
+export async function syncAccounts(userId) {
+  try {
+    const items = await prisma.plaid_items.findMany({
+      where: { user_id: userId },
+    });
 
-  const itemsRes = await pool.query(
-    `
-    SELECT plaid_item_id, plaid_access_token, cursor
-    FROM plaid_items
-    WHERE user_id = $1
-    `,
-    [userId]
-  );
+    if (!items.length) return;
 
-  if (!itemsRes.rows.length) return;
+    for (const item of items) {
+      const accessToken = decrypt(item.plaid_access_token);
 
-
-  for (const item of itemsRes.rows) {
-    const accessToken = decrypt(item.plaid_access_token);
-    let cursor = item.cursor || null;
-    let hasMore = true;
-
-    while (hasMore) {
-      const response = await plaidClient.transactionsSync({
+      const response = await plaidClient.accountsGet({
         access_token: accessToken,
-        cursor,
       });
 
-      const {
-        added,
-        modified,
-        removed,
-        next_cursor,
-        has_more,
-      } = response.data;
-
-  
-      for (const tx of added) {
-        await pool.query(
-          `
-          INSERT INTO transactions
-          (user_id, account_id, plaid_transaction_id,
-           name, amount, category, date)
-          SELECT
-            $1,
-            ba.account_id,
-            $2,
-            $3,
-            $4,
-            $5,
-            $6
-          FROM bank_accounts ba
-          WHERE ba.plaid_account_id = $7
-          ON CONFLICT (plaid_transaction_id) DO NOTHING
-          `,
-          [
-            userId,
-            tx.transaction_id,
-            tx.name,
-            tx.amount,
-            tx.category?.[0] || null,
-            tx.date,
-            tx.account_id,
-          ]
-        );
+      for (const acc of response.data.accounts) {
+        await prisma.bank_accounts.upsert({
+          where: {
+            plaid_account_id: acc.account_id,
+          },
+          update: {
+            current_balance: acc.balances.current,
+            available_balance: acc.balances.available,
+            name: acc.name,
+            official_name: acc.official_name,
+            type: acc.type,
+            subtype: acc.subtype,
+          },
+          create: {
+            user_id: userId,
+            plaid_item_id: item.plaid_item_id,
+            plaid_account_id: acc.account_id,
+            name: acc.name,
+            official_name: acc.official_name,
+            type: acc.type,
+            subtype: acc.subtype,
+            current_balance: acc.balances.current,
+            available_balance: acc.balances.available,
+          },
+        });
       }
-
-
-      for (const tx of modified) {
-        await pool.query(
-          `
-          UPDATE transactions
-          SET
-            name = $1,
-            amount = $2,
-            category = $3,
-            date = $4
-          WHERE plaid_transaction_id = $5
-          `,
-          [
-            tx.name,
-            tx.amount,
-            tx.category?.[0] || null,
-            tx.date,
-            tx.transaction_id,
-          ]
-        );
-      }
-
-
-      for (const tx of removed) {
-        await pool.query(
-          `
-          DELETE FROM transactions
-          WHERE plaid_transaction_id = $1
-          `,
-          [tx.transaction_id]
-        );
-      }
-
-      cursor = next_cursor;
-      hasMore = has_more;
     }
-
-    await pool.query(
-      `
-      UPDATE plaid_items
-      SET cursor = $1
-      WHERE plaid_item_id = $2
-      `,
-      [cursor, item.plaid_item_id]
-    );
+  } catch (error) {
+    console.error("Account sync error:", error);
+    throw error;
   }
 }

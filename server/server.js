@@ -8,6 +8,9 @@ import reportRoutes from "./routes/reportRoutes.js";
 import accountRoutes from "./routes/accountRoutes.js";
 import transactionsRoutes from "./routes/transactionRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
+import goalRoutes from "./routes/goalRoutes.js";
+import { startWeeklySync } from "./services/autoSyncService.js";
+
 
 const app = express();
 
@@ -21,6 +24,8 @@ const corsOptions = {
   credentials: true,
   optionsSuccessStatus: 200
 };
+
+startWeeklySync();
 
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); 
@@ -45,6 +50,7 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/accounts", accountRoutes);
 app.use("/api/transactions", transactionsRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/goals", goalRoutes);
 
 
 const PORT = process.env.PORT || 5000;
