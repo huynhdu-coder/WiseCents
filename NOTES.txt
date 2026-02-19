@@ -1,0 +1,5 @@
+0. Refine systemprompt within AIRoutes depending on how we want to tailor the response
+1. Look into alternatives methods to display data from OpenAI, Markdown is not enough
+2. Wait for Dai to review Testdunn branch and get with him to push.
+3. Await WiseCentsDB Admin Pass change Fix
+4. Delete old typescript files within typescript testing folder
