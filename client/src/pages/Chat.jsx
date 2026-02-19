@@ -1,5 +1,7 @@
+import { API_BASE } from "../config/apiBase";
 import { useState } from "react";
 import owlLogo from "../assets/owl-logo.png";
+import ReactMarkdown from "react-markdown";
 
 export default function Chat() {
   const [messages, setMessages] = useState([
@@ -10,38 +12,60 @@ export default function Chat() {
   ]);
 
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSend = (e) => {
+   const handleSend = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || loading) return;
 
-    const userMessage = { sender: "user", text: input };
-    setMessages((prev) => [...prev, userMessage]);
-
-    // Add delayed "AI" response
-    setTimeout(() => {
-      const botReply = { sender: "bot", text: generateBotResponse(input) };
-      setMessages((prev) => [...prev, botReply]);
-    }, 1000);
-
+    const text = input;
     setInput("");
-  };
 
-  const generateBotResponse = (message) => {
-    const lower = message.toLowerCase();
+    // add user message immediately
+    setMessages((prev) => [...prev, { sender: "user", text }]);
 
-    if (lower.includes("summary") || lower.includes("report")) {
-      return "📊 Based on your activity this month, you’ve saved around $230 and spent mostly on food and transport.";
-    } else if (lower.includes("save")) {
-      return "💡 Try setting a weekly savings goal! Would you like help setting one?";
-    } else if (lower.includes("spend")) {
-      return "🧾 Your top spending category last week was dining out — consider home cooking to save ~$50 monthly!";
-    } else if (lower.includes("goal")) {
-      return "Let’s set a goal! How much do you want to save this month?";
-    } else if (lower.includes("hi") || lower.includes("hello")) {
-      return "Hello again! How can I help you manage your finances today?";
-    } else {
-      return "I’m still learning! Try asking about your ‘summary’, ‘savings’, or ‘spending habits’.";
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: "You’re not logged in. Please log in again." },
+      ]);
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await fetch(`${API_BASE}/api/ai/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ message: text }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessages((prev) => [
+          ...prev,
+          { sender: "bot", text: data?.message || data?.error || "AI request failed." },
+        ]);
+        return;
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: data.reply ?? "(No reply returned)" },
+      ]);
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: "Network error calling AI endpoint." },
+      ]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,11 +82,8 @@ export default function Chat() {
         {messages.map((msg, i) => (
           <div
             key={i}
-            className={`flex items-end ${
-              msg.sender === "user" ? "justify-end" : "justify-start"
-            }`}
+            className={`flex items-end ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
           >
-            
             {msg.sender === "bot" && (
               <img
                 src={owlLogo}
@@ -71,7 +92,6 @@ export default function Chat() {
               />
             )}
 
-            {/* Message bubble */}
             <div
               className={`max-w-xs md:max-w-md px-4 py-2 rounded-2xl text-sm shadow ${
                 msg.sender === "user"
@@ -79,20 +99,29 @@ export default function Chat() {
                   : "bg-white border border-gray-200 rounded-bl-none"
               }`}
             >
-              {msg.text}
+              <ReactMarkdown>{msg.text}</ReactMarkdown>
             </div>
 
-            {/* Optional placeholder for alignment */}
             {msg.sender === "user" && <div className="w-8" />}
           </div>
         ))}
+
+        {loading && (
+          <div className="flex items-end justify-start">
+            <img
+              src={owlLogo}
+              alt="WiseCents Bot"
+              className="w-12 h-12 rounded-full mr-2 border border-gray-200"
+            />
+            <div className="bg-white border border-gray-200 px-4 py-2 rounded-2xl text-sm shadow rounded-bl-none">
+              Thinking…
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Input Area */}
-      <form
-        onSubmit={handleSend}
-        className="p-4 bg-white border-t border-gray-200 flex gap-2"
-      >
+      <form onSubmit={handleSend} className="p-4 bg-white border-t border-gray-200 flex gap-2">
         <input
           type="text"
           value={input}
@@ -102,7 +131,8 @@ export default function Chat() {
         />
         <button
           type="submit"
-          className="bg-wisegreen text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+          disabled={loading}
+          className="bg-wisegreen text-white px-4 py-2 rounded-lg hover:bg-green-700 transition disabled:opacity-60"
         >
           Send
         </button>

@@ -5,15 +5,16 @@ export const getTransactions = async (req, res) => {
     const result = await pool.query(
       `
       SELECT
-        t.transaction_id,
+        t.id,
         t.name,
         t.amount,
-        t.category,
+        t.category_primary,
+        t.category_detailed,
         t.date,
         ba.name AS account_name,
         ba.subtype AS account_subtype
-      FROM transactions t
-      JOIN bank_accounts ba
+      FROM public.transactions t
+      JOIN public.bank_accounts ba
         ON t.account_id = ba.account_id
       WHERE t.user_id = $1
         AND ba.is_hidden = false

@@ -1,16 +1,16 @@
-{
-  "compilerOptions": {
-    "target": "ES2020",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "rootDir": "./",
-    "outDir": "./dist",
-    "esModuleInterop": true,
-    "allowJs": true,
-    "strict": true,
-    "skipLibCheck": true
-  }
-}
+//{
+//  "compilerOptions": {
+//    "target": "ES2020",
+//    "module": "NodeNext",
+//    "moduleResolution": "NodeNext",
+//    "rootDir": "./",
+//    "outDir": "./dist",
+//    "esModuleInterop": true,
+//    "allowJs": true,
+//    "strict": true,
+//    "skipLibCheck": true
+//  }
+//}
 
 //{
   // Visit https://aka.ms/tsconfig to read more about this file

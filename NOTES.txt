@@ -1,5 +1,5 @@
-1. Investigate local errors: dashboard.jsx, plain link token etc 
-2. Move away from Typescript, Prisma ORM has been implemented on airoutes. 
-3. Look into how sequelize is used within our APP right now
-4. Fix Bank_accounts relation and look into JWT authentication token error
-5. Downgrade Prisma v7 to v5.
+0. Refine systemprompt within AIRoutes depending on how we want to tailor the response
+1. Look into alternatives methods to display data from OpenAI, Markdown is not enough
+2. Wait for Dai to review Testdunn branch and get with him to push.
+3. Await WiseCentsDB Admin Pass change Fix
+4. Delete old typescript files within typescript testing folder

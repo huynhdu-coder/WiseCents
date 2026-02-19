@@ -1,5 +1,6 @@
 import { useState } from "react";
 import owlLogo from "../assets/owl-logo.png";
+import ReactMarkdown from "react-markdown";
 
 export default function AIChatWidget() {
   const [open, setOpen] = useState(false);
@@ -53,9 +54,9 @@ export default function AIChatWidget() {
           <div className="flex-1 p-3 overflow-y-auto space-y-2 text-sm">
             {messages.map((m, i) => (
               <div key={i} className={m.sender === "user" ? "text-right" : ""}>
-                <span className="inline-block bg-gray-100 p-2 rounded">
-                  {m.text}
-                </span>
+                <div className="inline-block bg-gray-100 p-2 rounded">
+                  <ReactMarkdown>{m.text}</ReactMarkdown>
+                </div>
               </div>
             ))}
           </div>
