@@ -1,12 +1,20 @@
 import { useState, useEffect, useCallback} from "react";
 import PlaidLinkButton from "../components/plaid/PlaidLinkButton";
 import { API_BASE } from "../config/apiBase";
+import AccountCard from "../components/accounts/AccountCard";
+import GoalSection from "../components/GoalSection";
+import CreateGoalForm from "../components/CreateGoalForm";
+import CategoryPieChart from "../components/charts/CategoryPieChart";
+import MonthlyBarChart from "../components/charts/MonthlyBarChart";
 
 
 
 export default function Dashboard() {
   const [linkToken, setLinkToken] = useState(null);
   const [accounts, setAccounts] = useState([]);
+  const [goals, setGoals] = useState([]);
+  const [showGoalForm, setShowGoalForm] = useState(false);
+  
 
   const token = localStorage.getItem("token");
   
@@ -23,6 +31,56 @@ export default function Dashboard() {
       setAccounts(data);
     } catch (error) {
       console.error("Error fetching accounts:", error);
+    }
+  }, [token]);
+
+  // Delete account function
+  const deleteAccount = async (accountId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this account?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(
+        `${API_BASE}/api/accounts/${accountId}/delete`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to delete account");
+      }
+
+      // Refresh account list
+      fetchAccounts();
+
+    } catch (error) {
+      console.error("Delete account error:", error);
+      alert("Failed to delete account.");
+    }
+  };
+
+  // Fetch goals function
+  const fetchGoals = useCallback(async () => {
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${API_BASE}/api/goals`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      setGoals(data);
+    } catch (error) {
+      console.error("Error fetching goals:", error);
     }
   }, [token]);
 
@@ -50,44 +108,74 @@ export default function Dashboard() {
   // Load accounts on page load
   useEffect(() => {
     fetchAccounts();
-  }, [fetchAccounts]);
+    fetchGoals();
+  }, [fetchAccounts, fetchGoals]);
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-wisegreen mb-4">
-        Dashboard Overview
-      </h1>
-      <p className="text-gray-600 mb-6">
-        Overview of your spending, financial summary and AI insights.
-      </p>
+    <div className="p-8 bg-gray-100 min-h-screen">
 
-      {/* Show connect button only when linkToken is ready */}
-      {linkToken ? (
+      <h1 className="text-2xl font-bold text-wisegreen mb-2">
+        Dashboard
+      </h1>
+
+      {/* Plaid Connect + Account Cards */}
+      <div className="flex gap-6 overflow-x-auto pb-4 items-start">
+        {linkToken && (
+      <div className="min-w-[280px] bg-white border-2 border-dashed border-gray-300 
+                      rounded-xl flex flex-col justify-center items-center 
+                      p-6 hover:border-wisegreen hover:bg-green-50 
+                      transition-all duration-200 shadow-sm">
+        
+        <div className="text-3xl text-wisegreen mb-2">+</div>
+        
         <PlaidLinkButton
           linkToken={linkToken}
           onSuccess={fetchAccounts}
+          label="Add Account"
         />
-      ) : (
-        <p className="text-gray-500">Loading bank connection...</p>
-      )}
 
-      {/* Show user accounts after successful connection */}
-      {accounts.length > 0 && (
-        <div className="mt-6 bg-white p-4 rounded shadow">
-          <h2 className="text-xl font-bold mb-3">Your Accounts</h2>
+      </div>
+    )}
 
-          {accounts.map((acc) => (
-            <div key={acc.account_id} className="border-b py-2">
-              <p className="font-semibold">{acc.name}</p>
-              <p className="text-gray-600 capitalize">{acc.subtype}</p>
-              <p className="text-wisegreen font-bold">
-                Balance: ${acc.current_balance}
-              </p>
-            </div>
-          ))}
+        {/* Accounts Section */}
+        {accounts.map((acc) => (
+          <AccountCard
+            key={acc.account_id}
+            account={acc}
+            onDelete={deleteAccount}
+          />
+        ))}
+      </div>
+
+      {/* ADD GOAL BUTTON */}
+      <div className="mt-8">
+        <button
+          onClick={() => setShowGoalForm(!showGoalForm)}
+          className="bg-wisegreen text-white px-6 py-2 rounded-xl shadow hover:shadow-lg transition"
+        >
+          + Add Goal
+        </button>
+      </div>
+
+
+      {/* GOAL FORM */}
+      {showGoalForm && (
+        <div className="mt-6">
+          <CreateGoalForm onCreated={fetchGoals} />
         </div>
       )}
-    
+
+      {/* GOAL SECTION */}
+      <div className="mt-10">
+        <GoalSection goals={goals} refreshGoals={fetchGoals}/>
+      </div>
+
+      {/* CHARTS */}
+      <div className="grid md:grid-cols-2 gap-6 mt-10">
+        <CategoryPieChart />
+        <MonthlyBarChart />
+      </div>
+
 
     </div>
   );
