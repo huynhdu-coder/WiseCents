@@ -1,4 +1,4 @@
-import pool from "../config/database.js";
+import prisma from "../config/prisma.js";
 import { encrypt } from "../utils/encryption.js";
 import {
   createLinkTokenPlaid,
@@ -9,45 +9,53 @@ import {
   syncTransactions,
 } from "../services/plaidSyncService.js";
 
-
 export const createLinkToken = async (req, res) => {
   try {
     const response = await createLinkTokenPlaid(req.userId);
     res.json({ link_token: response.data.link_token });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error("Create link token error:", err);
+    res.status(500).json({ error: "Failed to create link token" });
   }
 };
-
 
 export const exchangePublicToken = async (req, res) => {
   try {
     const { public_token } = req.body;
+
+    if (!public_token) {
+      return res.status(400).json({ error: "Public token missing" });
+    }
+
     const response = await exchangePublicTokenPlaid(public_token);
 
-    await pool.query(
-      `
-      INSERT INTO plaid_items
-      (user_id, plaid_item_id, plaid_access_token)
-      VALUES ($1,$2,$3)
-      ON CONFLICT (plaid_item_id)
-      DO UPDATE SET plaid_access_token = EXCLUDED.plaid_access_token
-      `,
-      [
-        req.userId,
-        response.data.item_id,
-        encrypt(response.data.access_token),
-      ]
-    );
+    const encryptedToken = encrypt(response.data.access_token);
 
+    // Save or update plaid item
+    await prisma.plaid_items.upsert({
+      where: {
+        plaid_item_id: response.data.item_id,
+      },
+      update: {
+        plaid_access_token: encryptedToken,
+      },
+      create: {
+        user_id: req.userId,
+        plaid_item_id: response.data.item_id,
+        plaid_access_token: encryptedToken,
+        cursor: null,
+      },
+    });
 
-    /* Initial sync */
+    // Initial sync
     await syncAccounts(req.userId);
     await syncTransactions(req.userId);
 
     res.json({ success: true });
+
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error("Exchange public token error:", err);
+    res.status(500).json({ error: "Failed to exchange token" });
   }
 };
 
