@@ -3,3 +3,5 @@
 2. Wait for Dai to review Testdunn branch and get with him to push.
 3. Await WiseCentsDB Admin Pass change Fix
 4. Delete old typescript files within typescript testing folder
+
+PLAN: Move systemprompt to Open AI from AI Routes to dedicated file and reinstruct the AI heavily

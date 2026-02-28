@@ -91,8 +91,8 @@ export async function syncTransactions(userId) {
         await pool.query(
           `
           INSERT INTO transactions
-          (user_id, account_id, plaid_transaction_id,
-           name, amount, category, date)
+            (user_id, account_id, transaction_id,
+            name, amount, category_primary, category_detailed, date, updated_at)
           SELECT
             $1,
             ba.account_id,
@@ -100,17 +100,26 @@ export async function syncTransactions(userId) {
             $3,
             $4,
             $5,
-            $6
+            $6,
+            $7,
+            NOW()
           FROM bank_accounts ba
-          WHERE ba.plaid_account_id = $7
-          ON CONFLICT (plaid_transaction_id) DO NOTHING
+          WHERE ba.plaid_account_id = $8
+          ON CONFLICT (transaction_id) DO UPDATE SET
+            name = EXCLUDED.name,
+            amount = EXCLUDED.amount,
+            category_primary = EXCLUDED.category_primary,
+            category_detailed = EXCLUDED.category_detailed,
+            date = EXCLUDED.date,
+            updated_at = NOW()
           `,
           [
             userId,
-            tx.transaction_id,
+            tx.transaction_id,                 // <-- goes into transaction_id
             tx.name,
             tx.amount,
-            tx.category?.[0] || null,
+            tx.personal_finance_category?.primary ?? null,
+            tx.personal_finance_category?.detailed ?? null,
             tx.date,
             tx.account_id,
           ]
@@ -125,14 +134,17 @@ export async function syncTransactions(userId) {
           SET
             name = $1,
             amount = $2,
-            category = $3,
-            date = $4
-          WHERE plaid_transaction_id = $5
+            category_primary = $3,
+            category_detailed = $4,
+            date = $5,
+            updated_at = NOW()
+          WHERE transaction_id = $6
           `,
           [
             tx.name,
             tx.amount,
-            tx.category?.[0] || null,
+            tx.personal_finance_category?.primary ?? null,
+            tx.personal_finance_category?.detailed ?? null,
             tx.date,
             tx.transaction_id,
           ]
@@ -142,10 +154,7 @@ export async function syncTransactions(userId) {
 
       for (const tx of removed) {
         await pool.query(
-          `
-          DELETE FROM transactions
-          WHERE plaid_transaction_id = $1
-          `,
+          `DELETE FROM transactions WHERE transaction_id = $1`,
           [tx.transaction_id]
         );
       }
