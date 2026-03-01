@@ -1,52 +1,80 @@
-import pool from "../config/database.js";
+import prisma from "../config/prisma.js";
 
 export const getMonthlyReport = async (req, res) => {
   try {
     const userId = req.userId;
-    const { month } = req.query; 
 
-    if (!month) {
-      return res.status(400).json({ error: "Month is required (YYYY-MM)" });
-    }
+    const result = await prisma.$queryRaw`
+      WITH months AS (
+        SELECT 
+          TO_CHAR(date_trunc('month', CURRENT_DATE) - 
+          INTERVAL '1 month' * generate_series(0, 11), 
+          'YYYY-MM') AS month
+      )
 
-  
-    const daily = await pool.query(
-      `
-      SELECT
-        DATE(date) AS day,
-        SUM(ABS(amount)) AS total
-      FROM transactions
-      WHERE user_id = $1
-        AND amount < 0
-        AND DATE_TRUNC('month', date) = DATE_TRUNC('month', $2::date)
-      GROUP BY day
-      ORDER BY day
-      `,
-      [userId, `${month}-01`]
-    );
+      SELECT 
+        m.month,
+        COALESCE(SUM(CASE WHEN t.amount > 0 THEN t.amount ELSE 0 END), 0) AS expenses,
+        COALESCE(SUM(CASE WHEN t.amount < 0 THEN ABS(t.amount) ELSE 0 END), 0) AS income,
+        COALESCE(SUM(t.amount), 0) AS net
 
-  
-    const categories = await pool.query(
-      `
-      SELECT
-        category,
-        SUM(ABS(amount)) AS total
-      FROM transactions
-      WHERE user_id = $1
-        AND amount < 0
-        AND DATE_TRUNC('month', date) = DATE_TRUNC('month', $2::date)
-      GROUP BY category
-      ORDER BY total DESC
-      `,
-      [userId, `${month}-01`]
-    );
+      FROM months m
+      LEFT JOIN transactions t
+        ON TO_CHAR(t.date, 'YYYY-MM') = m.month
+        AND t.user_id = ${userId}
 
-    res.json({
-      daily: daily.rows,
-      categories: categories.rows,
+      LEFT JOIN bank_accounts b
+        ON t.account_id = b.account_id
+        AND b.is_hidden = false
+
+      GROUP BY m.month
+      ORDER BY m.month ASC
+    `;
+
+    const formatted = result.map(row => ({
+      month: row.month,
+      income: Number(row.income),
+      expenses: Number(row.expenses),
+      net: Number(row.net),
+    }));
+
+    res.json(formatted);
+
+  } catch (error) {
+    console.error("Monthly trend error:", error);
+    res.status(500).json({ error: "Failed to fetch monthly data" });
+  }
+};
+
+
+
+export const getSpendingByCategory = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    const data = await prisma.transactions.groupBy({
+      by: ["category_primary"],
+      where: {
+        user_id: userId,
+        amount: { gt: 0 }, // spending only
+        bank_accounts: {
+          is_hidden: false,
+        },
+      },
+      _sum: {
+        amount: true,
+      },
     });
-  } catch (err) {
-    console.error("MONTHLY REPORT ERROR:", err);
-    res.status(500).json({ error: "Failed to generate report" });
+
+    const formatted = data.map(item => ({
+      category: item.category_primary || "Uncategorized",
+      total: Number(item._sum.amount || 0),
+    }));
+
+    res.json(formatted);
+
+  } catch (error) {
+    console.error("Spending by category error:", error);
+    res.status(500).json({ error: "Failed to fetch category data" });
   }
 };

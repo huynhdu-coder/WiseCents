@@ -14,8 +14,33 @@ CREATE TABLE users (
     phone VARCHAR(20),
     dob DATE,
     is_admin BOOLEAN DEFAULT FALSE,
+    primary_intent VARCHAR(50) DEFAULT 'general_budgeting',
+    advice_style VARCHAR(50) DEFAULT 'balanced',
+    change_tolerance VARCHAR(50) DEFAULT 'moderate',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT valid_primary_intent CHECK (primary_intent IN (
+        'save_more', 
+        'reduce_debt', 
+        'investment_planning', 
+        'expense_tracking', 
+        'general_budgeting',
+        'retirement_planning'
+    )),
+    CONSTRAINT valid_advice_style CHECK (advice_style IN (
+        'motivational',
+        'balanced', 
+        'analytical',
+        'strict',
+        'casual'
+    )),
+    CONSTRAINT valid_change_tolerance CHECK (change_tolerance IN (
+        'conservative',
+        'moderate',
+        'aggressive',
+        'very_aggressive'
+    ))
 );
 
 -- Create goals table
