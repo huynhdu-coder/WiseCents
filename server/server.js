@@ -40,6 +40,7 @@ const limiter = rateLimit({
   message: { error: 'Too many requests from this IP, please try again later.' },
   standardHeaders: true, 
   legacyHeaders: false, 
+  skip: (req) => req.method === "OPTIONS"
 });
 
 app.use("/api/", limiter);
