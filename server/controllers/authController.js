@@ -18,16 +18,16 @@ export const register = async (req, res) => {
 
     const token = newUser.generateToken();
 
-    res.status(201).json({ 
+    return res.status(201).json({
       token,
       user: newUser.toPublicJSON()
     });
-
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("=== REGISTER ERROR ===");
+    console.error(err);
+    return res.status(500).json({ message: err.message || "Server error" });
   }
 };
-
 
 export const login = async (req, res) => {
   try {
@@ -47,6 +47,8 @@ export const login = async (req, res) => {
     });
 
   } catch (err) {
+    console.error("=== LOGIN ERROR ===");
+    console.error(err);  // ⚠️ Log full error
     res.status(500).json({ message: err.message });
   }
 };
