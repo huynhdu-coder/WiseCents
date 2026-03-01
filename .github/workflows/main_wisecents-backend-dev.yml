@@ -62,6 +62,7 @@ jobs:
         with:
           app-name: 'wisecents-backend-dev'
           slot-name: 'Production'
-          package: .
+          package: ./server
 
           
+
