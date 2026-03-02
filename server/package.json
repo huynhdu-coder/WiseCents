@@ -23,12 +23,12 @@
     "node-cron": "^4.2.1",
     "openai": "^6.17.0",
     "pg": "^8.19.0",
+    "prisma": "^7.4.2",
     "plaid": "^39.1.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",
     "nodemon": "^2.0.22",
-    "prisma": "^7.4.2",
     "supertest": "^6.3.4"
   }
 }
