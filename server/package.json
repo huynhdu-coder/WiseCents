@@ -9,14 +9,13 @@
     "postinstall": "prisma generate",
     "build": "prisma generate",
     "test": "echo \"No tests specified\" && exit 0"
-    
   },
   "engines": {
-    "node": "20.x"  
-    },
+    "node": "20.x"
+  },
   "dependencies": {
     "@azure/openai": "^2.0.0",
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "^6.19.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
@@ -29,9 +28,8 @@
     "pg": "^8.16.3",
     "pg-hstore": "^2.3.4",
     "plaid": "^39.1.0",
-    "sequelize": "^6.37.7",
-    "prisma": "^5.22.0"
-    
+    "prisma": "^6.19.2",
+    "sequelize": "^6.37.7"
   },
   "devDependencies": {
     "jest": "^29.7.0",
