@@ -9,10 +9,11 @@
     "postinstall": "prisma generate",
     "build": "prisma generate",
     "test": "echo \"No tests specified\" && exit 0"
+    
   },
   "engines": {
-  "node": "20.x"
-  }
+    "node": "20.x"  
+    },
   "dependencies": {
     "@azure/openai": "^2.0.0",
     "@prisma/client": "^5.22.0",
