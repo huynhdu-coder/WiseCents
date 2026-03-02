@@ -112,4 +112,3 @@ export const hideAccount = async (req, res) => {
   }
 };
 
-

@@ -10,32 +10,25 @@ import accountRoutes from "./routes/accountRoutes.js";
 import transactionsRoutes from "./routes/transactionRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import goalRoutes from "./routes/goalRoutes.js";
+import { startWeeklySync } from "./services/autoSyncService.js";
 
 
 const app = express();
 
-const allowedOrigins = [
-  "https://victorious-hill-01f04f60f.3.azurestaticapps.net",
-  "http://localhost:3000"
-];
-
-
-app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (Postman, curl)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-
-    return callback(new Error("Not allowed by CORS"));
-  },
-  credentials: true,
+const corsOptions = {
+  origin: [
+    "http://localhost:3000",
+    "https://victorious-hill-01f04f60f.3.azurestaticapps.net"
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
-app.options("*", cors());
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); 
 
 app.use(express.json());
 
@@ -46,7 +39,6 @@ const limiter = rateLimit({
   message: { error: 'Too many requests from this IP, please try again later.' },
   standardHeaders: true, 
   legacyHeaders: false, 
-  skip: (req) => req.method === "OPTIONS"
 });
 
 app.use("/api/", limiter);
@@ -59,6 +51,8 @@ app.use("/api/accounts", accountRoutes);
 app.use("/api/transactions", transactionsRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/goals", goalRoutes);
+
+startWeeklySync();
 
 
 const PORT = process.env.PORT || 5000;
