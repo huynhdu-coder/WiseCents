@@ -10,7 +10,6 @@ import accountRoutes from "./routes/accountRoutes.js";
 import transactionsRoutes from "./routes/transactionRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import goalRoutes from "./routes/goalRoutes.js";
-import { startWeeklySync } from "./services/autoSyncService.js";
 
 
 const app = express();
@@ -57,10 +56,4 @@ app.use("/api/goals", goalRoutes);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`WiseCents backend running on port ${PORT}`);
-  try {
-    startWeeklySync();
-    console.log("Weekly sync service started");
-  } catch (err) {
-    console.error("Failed to start weekly sync:", err);
-  }
 });
