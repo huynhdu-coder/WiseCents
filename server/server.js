@@ -26,7 +26,6 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 
-startWeeklySync();
 
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); 
@@ -58,4 +57,10 @@ app.use("/api/goals", goalRoutes);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`WiseCents backend running on port ${PORT}`);
+  try {
+    startWeeklySync();
+    console.log("Weekly sync service started");
+  } catch (err) {
+    console.error("Failed to start weekly sync:", err);
+  }
 });
