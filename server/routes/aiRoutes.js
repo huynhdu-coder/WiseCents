@@ -1,6 +1,6 @@
 import express from "express";
 import auth from "../middleware/auth.js";
-import db from "../config/database.js";
+import prisma from "../config/prisma.js";
 import OpenAI from "openai";
 
 const router = express.Router();
@@ -9,7 +9,7 @@ const router = express.Router();
 const openai = new OpenAI({
   apiKey: process.env.AZURE_OPENAI_API_KEY,
   baseURL: `${process.env.AZURE_OPENAI_ENDPOINT}/openai/deployments/${process.env.AZURE_OPENAI_DEPLOYMENT}`,
-  defaultQuery: { "api-version": "2024-02-15-preview" }
+  defaultQuery: { "api-version": "2024-02-15-preview" },
 });
 
 router.post("/chat", auth, async (req, res) => {
@@ -17,19 +17,32 @@ router.post("/chat", auth, async (req, res) => {
     const userId = req.userId;
     const { message } = req.body;
 
-    // Fetch recent transactions
-    const txResult = await db.query(
-      `SELECT category, amount, date
-       FROM transactions
-       WHERE user_id = $1
-       ORDER BY date DESC
-       LIMIT 25`,
-      [userId]
-    );
+    // Fetch recent transactions (Prisma 7)
+    const transactions = await prisma.transactions.findMany({
+      where: {
+        user_id: userId,
+      },
+      select: {
+        category_primary: true,
+        category_detailed: true,
+        amount: true,
+        date: true,
+      },
+      orderBy: {
+        date: "desc",
+      },
+      take: 25,
+    });
 
-    // Summarize for AI (VERY IMPORTANT)
-    const txSummary = txResult.rows
-      .map(t => `${t.category}: $${t.amount}`)
+    // Summarize for AI (safe + schema-accurate)
+    const txSummary = transactions
+      .map(t => {
+        const category =
+          t.category_detailed ||
+          t.category_primary ||
+          "Uncategorized";
+        return `${category}: $${t.amount}`;
+      })
       .join("\n");
 
     // AI prompt
@@ -37,21 +50,22 @@ router.post("/chat", auth, async (req, res) => {
       messages: [
         {
           role: "system",
-          content: "You are WiseCents, a helpful financial assistant for college students."
+          content:
+            "You are WiseCents, a helpful financial assistant for college students.",
         },
         {
           role: "assistant",
-          content: `Recent transactions:\n${txSummary}`
+          content: `Recent transactions:\n${txSummary}`,
         },
         {
           role: "user",
-          content: message
-        }
-      ]
+          content: message,
+        },
+      ],
     });
 
     res.json({
-      reply: completion.choices[0].message.content
+      reply: completion.choices[0].message.content,
     });
   } catch (err) {
     console.error("AI CHAT ERROR:", err);
