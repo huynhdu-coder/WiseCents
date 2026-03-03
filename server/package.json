@@ -25,6 +25,7 @@
     "pg-hstore": "^2.3.4",
     "plaid": "^39.1.0",
     "prisma": "^5.22.0",
+    "react-markdown": "^10.1.0",
     "sequelize": "^6.37.7"
   },
   "devDependencies": {

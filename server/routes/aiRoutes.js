@@ -46,7 +46,10 @@ router.post("/chat", auth, async (req, res) => {
     let digestText = "User has opted out of transaction analysis.";
 
     // Respect AI consent switch
-    if (String(user.ai_data_consent).toLowerCase() === "true") {
+    const consent = String(user.ai_data_consent || "").toLowerCase();
+    const hasConsent = consent === "true" || consent === "opt-in" || consent === "yes";
+
+    if (hasConsent) {
       const transactions = await prisma.transactions.findMany({
         where: { user_id: userId },
         select: {
