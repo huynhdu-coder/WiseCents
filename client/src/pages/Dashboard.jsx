@@ -4,10 +4,6 @@ import { API_BASE } from "../config/apiBase";
 import AccountCard from "../components/accounts/AccountCard";
 import GoalSection from "../components/GoalSection";
 import CreateGoalForm from "../components/CreateGoalForm";
-import CategoryPieChart from "../components/charts/CategoryPieChart";
-import MonthlyBarChart from "../components/charts/MonthlyBarChart";
-
-
 
 export default function Dashboard() {
   const [linkToken, setLinkToken] = useState(null);
@@ -200,13 +196,6 @@ export default function Dashboard() {
       <div className="mt-10">
         <GoalSection goals={goals} refreshGoals={fetchGoals}/>
       </div>
-
-      {/* CHARTS */}
-      <div className="grid md:grid-cols-2 gap-6 mt-10">
-        <CategoryPieChart />
-        <MonthlyBarChart />
-      </div>
-
 
     </div>
   );

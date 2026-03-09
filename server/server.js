@@ -6,7 +6,7 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import accountRoutes from "./routes/accountRoutes.js";
-import transactionsRoutes from "./routes/transactionRoutes.js";
+// import transactionsRoutes from "./routes/transactionRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import goalRoutes from "./routes/goalRoutes.js";
 import { startWeeklySync } from "./services/autoSyncService.js";
@@ -47,7 +47,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/plaid", plaidRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/accounts", accountRoutes);
-app.use("/api/transactions", transactionsRoutes);
+// app.use("/api/transactions", transactionsRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/goals", goalRoutes);
 
