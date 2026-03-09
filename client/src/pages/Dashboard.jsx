@@ -19,20 +19,33 @@ export default function Dashboard() {
   const token = localStorage.getItem("token");
   
   //Fetch accounts function
-  const fetchAccounts = useCallback( async () => {
-    if (!token) return;
-    try{
-      const res = await fetch(`${API_BASE}/api/accounts`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+  const fetchAccounts = useCallback(async () => {
+  if (!token) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/accounts`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
     });
-      const data = await res.json();
+
+    const data = await res.json();
+    console.log("Accounts API response:", data);
+
+    // FIX
+    if (Array.isArray(data)) {
       setAccounts(data);
-    } catch (error) {
-      console.error("Error fetching accounts:", error);
+    } else if (Array.isArray(data.accounts)) {
+      setAccounts(data.accounts);
+    } else {
+      setAccounts([]);
     }
-  }, [token]);
+
+  } catch (error) {
+    console.error("Error fetching accounts:", error);
+    setAccounts([]);
+  }
+}, [token]);
 
   // Delete account function
   const deleteAccount = async (accountId) => {
@@ -68,21 +81,39 @@ export default function Dashboard() {
 
   // Fetch goals function
   const fetchGoals = useCallback(async () => {
-    if (!token) return;
+  if (!token) {
+    setGoals([]);
+    return;
+  }
 
-    try {
-      const res = await fetch(`${API_BASE}/api/goals`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  try {
+    const res = await fetch(`${API_BASE}/api/goals`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      const data = await res.json();
-      setGoals(data);
-    } catch (error) {
-      console.error("Error fetching goals:", error);
+    const data = await res.json();
+
+    console.log("Goals response:", data);
+
+    if (!res.ok) {
+      console.error("Goals fetch failed:", data);
+      setGoals([]);
+      return;
     }
-  }, [token]);
+
+    if (Array.isArray(data)) {
+      setGoals(data);
+    } else {
+      setGoals([]);
+    }
+
+  } catch (error) {
+    console.error("Error fetching goals:", error);
+    setGoals([]);
+  }
+}, [token]);
 
   // Fetch Plaid link token
   useEffect(() => {
