@@ -15,6 +15,7 @@ import Settings from "./pages/Settings";
 import Charts from "./pages/Charts";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 function ConsentModal() {
   const { showConsentModal, handleConsent } = useAuth();
@@ -28,14 +29,11 @@ export default function App() {
       <ConsentModal />
       <BrowserRouter>
         <Routes>
-
-          {/* Public pages */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-
-          {/* Protected dashboard routes */}
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route
             path="/dashboard"
             element={

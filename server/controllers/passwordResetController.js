@@ -16,7 +16,6 @@ export const requestPasswordReset = async (req, res) => {
     if (!email) return res.status(400).json({ message: "Email is required" });
 
     const user = await prisma.users.findUnique({ where: { email } });
-n
     if (!user) {
       return res.json({ message: "If that email exists, a code has been sent." });
     }
@@ -116,18 +115,32 @@ export const resetPassword = async (req, res) => {
       return res.status(400).json({ message: "Invalid or expired code" });
     }
 
-    const hashed = await bcrypt.hash(newPassword, 10);
-    await prisma.users.update({
-      where: { user_id: user.user_id },
-      data: { password: hashed, updated_at: new Date() },
-    });
+const hashed = await bcrypt.hash(newPassword, 10);
+await prisma.users.update({
+  where: { user_id: user.user_id },
+  data: { password: hashed, updated_at: new Date() },
+});
 
-    await prisma.password_reset_tokens.update({
-      where: { id: resetToken.id },
-      data: { used: true },
-    });
+await prisma.password_reset_tokens.update({
+  where: { id: resetToken.id },
+  data: { used: true },
+});
 
-    res.json({ message: "Password reset successfully" });
+await transporter.sendMail({
+  from: `"WiseCents" <${process.env.EMAIL_USER}>`,
+  to: email,
+  subject: "Your WiseCents Password Has Been Changed",
+  html: `
+    <div style="font-family: sans-serif; max-width: 480px; margin: auto;">
+      <h2 style="color: #2d6a4f;">Password Changed</h2>
+      <p>Hi ${user.first_name},</p>
+      <p>Your WiseCents password was just changed successfully.</p>
+      <p>If you didn't make this change, please contact us immediately or reset your password again.</p>
+    </div>
+  `,
+});
+
+res.json({ message: "Password reset successfully" });
   } catch (err) {
     console.error("resetPassword error:", err);
     res.status(500).json({ message: "Password reset failed" });
