@@ -22,16 +22,11 @@ export default function Login() {
       navigate("/dashboard");
     } catch (err) {
       console.error("Login error:", err);
-      
-      // Handle different types of errors
       if (err.response) {
-        // Server responded with error status
         setError(err.response.data?.message || "Invalid email or password");
       } else if (err.request) {
-        // Request made but no response received
         setError("Cannot connect to server. Please check if the backend is running.");
       } else {
-        // Something else happened
         setError("An unexpected error occurred. Please try again.");
       }
     } finally {
@@ -77,6 +72,15 @@ export default function Login() {
               required
               disabled={loading}
             />
+            {/* Forgot password link */}
+            <div className="text-right mt-1">
+              <span
+                onClick={() => navigate("/forgot-password")}
+                className="text-sm text-wisegreen cursor-pointer hover:underline"
+              >
+                Forgot password?
+              </span>
+            </div>
           </div>
 
           <button
@@ -90,8 +94,8 @@ export default function Login() {
 
         <p className="text-gray-500 text-sm text-center mt-6">
           Don't have an account?{" "}
-          <span 
-            onClick={() => navigate("/register")} 
+          <span
+            onClick={() => navigate("/register")}
             className="text-wisegreen font-semibold cursor-pointer hover:underline"
           >
             Sign up
