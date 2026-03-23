@@ -1,9 +1,9 @@
-import express from "express";
-import auth from "../middleware/auth.js";
-import { getTransactions } from "../controllers/transactionController.js";
+// import express from "express";
+// import auth from "../middleware/auth.js";
+// import { getTransactions } from "../controllers/transactionController.js";
 
-const router = express.Router();
+// const router = express.Router();
 
-router.get("/", auth, getTransactions);
+// router.get("/", auth, getTransactions);
 
-export default router;
+// export default router;
