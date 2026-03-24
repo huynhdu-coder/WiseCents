@@ -14,8 +14,8 @@ export const createLinkToken = async (req, res) => {
     const response = await createLinkTokenPlaid(req.userId);
     res.json({ link_token: response.data.link_token });
   } catch (err) {
-    console.error("Create link token error:", err);
-    res.status(500).json({ error: "Failed to create link token" });
+    console.error("Create link token error:", err?.response?.data || err?.message || err);
+    return res.status(400).json({ error: err?.response?.data || err?.message || "Plaid error" });
   }
 };
 
