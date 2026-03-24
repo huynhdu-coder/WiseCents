@@ -10,7 +10,7 @@ const router = express.Router();
 const openai = new OpenAI({
   apiKey: process.env.AZURE_OPENAI_API_KEY,
   baseURL: `${process.env.AZURE_OPENAI_ENDPOINT}/openai/deployments/${process.env.AZURE_OPENAI_DEPLOYMENT}`,
-  defaultQuery: { "api-version": "2024-02-15-preview" }
+  defaultQuery: { "api-version": "2024-02-15-preview" },
 });
 
 router.get("/test", async (_req, res) => {

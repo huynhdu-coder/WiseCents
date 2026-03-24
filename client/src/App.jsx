@@ -5,6 +5,7 @@ import PrivacyConsentModal from "./components/PrivacyConsentModal";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
 
 import DashboardLayout from "./layouts/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
@@ -14,8 +15,8 @@ import Settings from "./pages/Settings";
 import Charts from "./pages/Charts";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
-// Rendered inside AuthProvider so it can read/write consent state from context
 function ConsentModal() {
   const { showConsentModal, handleConsent } = useAuth();
   if (!showConsentModal) return null;
@@ -28,13 +29,11 @@ export default function App() {
       <ConsentModal />
       <BrowserRouter>
         <Routes>
-
-          {/* Public pages */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
-          {/* Protected dashboard routes - wrapped in DashboardLayout */}
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route
             path="/dashboard"
             element={
@@ -43,11 +42,11 @@ export default function App() {
               </ProtectedRoute>
             }
           >
-            <Route index element={<Dashboard />} />        {/* /dashboard */}
-            <Route path="chat" element={<Chat />} />       {/* /dashboard/chat */}
-            <Route path="reports" element={<Reports />} /> {/* /dashboard/reports */}
-            <Route path="charts" element={<Charts />} />   {/* /dashboard/charts */}
-            <Route path="settings" element={<Settings />} /> {/* /dashboard/settings */}
+            <Route index element={<Dashboard />} />
+            <Route path="chat" element={<Chat />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="charts" element={<Charts />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
 
         </Routes>
