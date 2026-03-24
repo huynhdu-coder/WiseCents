@@ -137,9 +137,17 @@ export default function Settings() {
           </p>
         )}
 
-        <p className="mt-4 text-xs text-gray-400">
-          🔒 Your data is never sold or shared with third parties.
-        </p>
+<p className="mt-4 text-xs text-gray-400">
+  🔒 Your data is never sold or shared with third parties.{" "}
+  <a
+    href="/privacy"
+    target="_blank"
+    rel="noreferrer"
+    className="underline text-wisegreen hover:text-green-700"
+  >
+    View Privacy Policy
+  </a>
+</p>
       </div>
       {aiConsent === "opt-in" && (
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
