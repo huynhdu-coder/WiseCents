@@ -26,7 +26,6 @@ export default function Dashboard() {
     });
 
     const data = await res.json();
-    console.log("Accounts API response:", data);
 
     // FIX
     if (Array.isArray(data)) {
@@ -91,7 +90,6 @@ export default function Dashboard() {
 
     const data = await res.json();
 
-    console.log("Goals response:", data);
 
     if (!res.ok) {
       console.error("Goals fetch failed:", data);
