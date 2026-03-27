@@ -8,24 +8,25 @@ datasource db {
 }
 
 model bank_accounts {
-  account_id         Int                  @id @default(autoincrement())
-  user_id            Int
-  plaid_item_id      String
-  plaid_account_id   String               @unique
-  name               String?              @db.VarChar(100)
-  official_name      String?              @db.VarChar(100)
-  type               String?              @db.VarChar(50)
-  subtype            String?              @db.VarChar(50)
-  current_balance    Decimal?             @db.Decimal(12, 2)
-  available_balance  Decimal?             @db.Decimal(12, 2)
-  nickname           String?              @db.VarChar(50)
-  is_hidden          Boolean?             @default(false)
-  created_at         DateTime?            @default(now()) @db.Timestamp(6)
-  plaid_items        plaid_items          @relation(fields: [plaid_item_id], references: [plaid_item_id], onDelete: Cascade, onUpdate: NoAction)
-  users              users                @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
-  goal_contributions goal_contributions[]
-  goals              goals[]
-  transactions       transactions[]
+  account_id           Int                    @id @default(autoincrement())
+  user_id              Int
+  plaid_item_id        String
+  plaid_account_id     String                 @unique
+  name                 String?                @db.VarChar(100)
+  official_name        String?                @db.VarChar(100)
+  type                 String?                @db.VarChar(50)
+  subtype              String?                @db.VarChar(50)
+  current_balance      Decimal?               @db.Decimal(12, 2)
+  available_balance    Decimal?               @db.Decimal(12, 2)
+  nickname             String?                @db.VarChar(50)
+  is_hidden            Boolean?               @default(false)
+  created_at           DateTime?              @default(now()) @db.Timestamp(6)
+  plaid_items          plaid_items            @relation(fields: [plaid_item_id], references: [plaid_item_id], onDelete: Cascade, onUpdate: NoAction)
+  users                users                  @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  goal_contributions   goal_contributions[]
+  goals                goals[]
+  investment_transfers investment_transfers[]
+  transactions         transactions[]
 }
 
 model goals {
@@ -82,25 +83,27 @@ model transactions {
 }
 
 model users {
-  user_id          Int             @id @default(autoincrement())
-  first_name       String          @db.VarChar(50)
-  last_name        String          @db.VarChar(50)
-  email            String          @unique @db.VarChar(100)
-  password         String          @db.VarChar(255)
-  phone            String?         @db.VarChar(20)
-  dob              DateTime?       @db.Date
-  is_admin         Boolean?        @default(false)
-  created_at       DateTime?       @default(now()) @db.Timestamp(6)
-  updated_at       DateTime?       @default(now()) @db.Timestamp(6)
-  primary_intent   String?         @default("general_budgeting") @db.VarChar(50)
-  advice_style     String?         @default("balanced") @db.VarChar(50)
-  change_tolerance String?         @default("moderate") @db.VarChar(50)
-  ai_data_consent  String?         @db.VarChar(10)
-  bank_accounts    bank_accounts[]
-  goals            goals[]
-  plaid_items      plaid_items[]
-  transactions     transactions[]
+  user_id               Int                     @id @default(autoincrement())
+  first_name            String                  @db.VarChar(50)
+  last_name             String                  @db.VarChar(50)
+  email                 String                  @unique @db.VarChar(100)
+  password              String                  @db.VarChar(255)
+  phone                 String?                 @db.VarChar(20)
+  dob                   DateTime?               @db.Date
+  is_admin              Boolean?                @default(false)
+  created_at            DateTime?               @default(now()) @db.Timestamp(6)
+  updated_at            DateTime?               @default(now()) @db.Timestamp(6)
+  primary_intent        String?                 @default("general_budgeting") @db.VarChar(50)
+  advice_style          String?                 @default("balanced") @db.VarChar(50)
+  change_tolerance      String?                 @default("moderate") @db.VarChar(50)
+  ai_data_consent       String?                 @db.VarChar(10)
+  bank_accounts         bank_accounts[]
+  goals                 goals[]
+  investment_transfers  investment_transfers[]
+  paper_account         paper_accounts?
   password_reset_tokens password_reset_tokens[]
+  plaid_items           plaid_items[]
+  transactions          transactions[]
 }
 
 model goal_contributions {
@@ -121,4 +124,154 @@ model password_reset_tokens {
   used       Boolean  @default(false)
   created_at DateTime @default(now()) @db.Timestamp(6)
   users      users    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+}
+
+model paper_accounts {
+  paper_account_id     Int                    @id @default(autoincrement())
+  user_id              Int                    @unique
+  cash_balance         Decimal                @default(0) @db.Decimal(14, 2)
+  starting_balance     Decimal                @default(0) @db.Decimal(14, 2)
+  created_at           DateTime               @default(now()) @db.Timestamp(6)
+  updated_at           DateTime               @updatedAt @db.Timestamp(6)
+  investment_transfers investment_transfers[]
+  users                users                  @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  paper_orders         paper_orders[]
+  paper_positions      paper_positions[]
+  portfolio_snapshots  portfolio_snapshots[]
+  recurring_buys       recurring_buys[]
+}
+
+model investment_assets {
+  asset_id        Int               @id @default(autoincrement())
+  symbol          String            @unique @db.VarChar(20)
+  name            String?           @db.VarChar(120)
+  exchange        String?           @db.VarChar(50)
+  asset_type      AssetType         @default(STOCK)
+  currency        String?           @default("USD") @db.VarChar(10)
+  is_active       Boolean           @default(true)
+  created_at      DateTime          @default(now()) @db.Timestamp(6)
+  updated_at      DateTime          @updatedAt @db.Timestamp(6)
+  paper_orders    paper_orders[]
+  paper_positions paper_positions[]
+  price_cache     price_cache[]
+  recurring_buys  recurring_buys[]
+}
+
+model paper_positions {
+  position_id       Int               @id @default(autoincrement())
+  paper_account_id  Int
+  asset_id          Int
+  quantity          Decimal           @default(0) @db.Decimal(20, 8)
+  avg_cost          Decimal           @default(0) @db.Decimal(14, 4)
+  total_cost        Decimal           @default(0) @db.Decimal(14, 2)
+  created_at        DateTime          @default(now()) @db.Timestamp(6)
+  updated_at        DateTime          @updatedAt @db.Timestamp(6)
+  investment_assets investment_assets @relation(fields: [asset_id], references: [asset_id], onDelete: Cascade)
+  paper_accounts    paper_accounts    @relation(fields: [paper_account_id], references: [paper_account_id], onDelete: Cascade)
+
+  @@unique([paper_account_id, asset_id])
+  @@index([paper_account_id])
+  @@index([asset_id])
+}
+
+model paper_orders {
+  order_id          Int               @id @default(autoincrement())
+  paper_account_id  Int
+  asset_id          Int
+  side              OrderSide
+  status            OrderStatus       @default(FILLED)
+  dollar_amount     Decimal           @db.Decimal(14, 2)
+  quantity          Decimal           @db.Decimal(20, 8)
+  price             Decimal           @db.Decimal(14, 4)
+  executed_at       DateTime          @default(now()) @db.Timestamp(6)
+  created_at        DateTime          @default(now()) @db.Timestamp(6)
+  investment_assets investment_assets @relation(fields: [asset_id], references: [asset_id], onDelete: Cascade)
+  paper_accounts    paper_accounts    @relation(fields: [paper_account_id], references: [paper_account_id], onDelete: Cascade)
+
+  @@index([paper_account_id])
+  @@index([asset_id])
+  @@index([executed_at])
+}
+
+model recurring_buys {
+  recurring_buy_id  Int                @id @default(autoincrement())
+  paper_account_id  Int
+  asset_id          Int
+  dollar_amount     Decimal            @db.Decimal(14, 2)
+  frequency         RecurringFrequency
+  next_run_at       DateTime           @db.Timestamp(6)
+  last_run_at       DateTime?          @db.Timestamp(6)
+  is_active         Boolean            @default(true)
+  created_at        DateTime           @default(now()) @db.Timestamp(6)
+  updated_at        DateTime           @updatedAt @db.Timestamp(6)
+  investment_assets investment_assets  @relation(fields: [asset_id], references: [asset_id], onDelete: Cascade)
+  paper_accounts    paper_accounts     @relation(fields: [paper_account_id], references: [paper_account_id], onDelete: Cascade)
+
+  @@index([paper_account_id])
+  @@index([asset_id])
+  @@index([next_run_at])
+}
+
+model price_cache {
+  price_cache_id    Int               @id @default(autoincrement())
+  asset_id          Int
+  current_price     Decimal           @db.Decimal(14, 4)
+  previous_close    Decimal?          @db.Decimal(14, 4)
+  change            Decimal?          @db.Decimal(14, 4)
+  percent_change    Decimal?          @db.Decimal(8, 4)
+  fetched_at        DateTime          @default(now()) @db.Timestamp(6)
+  investment_assets investment_assets @relation(fields: [asset_id], references: [asset_id], onDelete: Cascade)
+
+  @@index([asset_id])
+  @@index([fetched_at])
+}
+
+model portfolio_snapshots {
+  snapshot_id      Int            @id @default(autoincrement())
+  paper_account_id Int
+  total_value      Decimal        @db.Decimal(14, 2)
+  cash_balance     Decimal        @db.Decimal(14, 2)
+  invested_value   Decimal        @db.Decimal(14, 2)
+  created_at       DateTime       @default(now()) @db.Timestamp(6)
+  paper_accounts   paper_accounts @relation(fields: [paper_account_id], references: [paper_account_id], onDelete: Cascade)
+
+  @@index([paper_account_id])
+  @@index([created_at])
+}
+
+model investment_transfers {
+  transfer_id      Int            @id @default(autoincrement())
+  user_id          Int
+  from_account_id  Int
+  paper_account_id Int
+  amount           Decimal        @db.Decimal(14, 2)
+  created_at       DateTime       @default(now()) @db.Timestamp(6)
+  bank_accounts    bank_accounts  @relation(fields: [from_account_id], references: [account_id], onDelete: Cascade)
+  paper_accounts   paper_accounts @relation(fields: [paper_account_id], references: [paper_account_id], onDelete: Cascade)
+  users            users          @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([from_account_id])
+  @@index([paper_account_id])
+}
+
+enum AssetType {
+  STOCK
+}
+
+enum OrderSide {
+  BUY
+  SELL
+}
+
+enum OrderStatus {
+  FILLED
+  CANCELLED
+}
+
+enum RecurringFrequency {
+  DAILY
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
 }
