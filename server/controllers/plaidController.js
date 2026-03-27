@@ -11,6 +11,8 @@ import {
 
 export const createLinkToken = async (req, res) => {
   try {
+    
+
     const response = await createLinkTokenPlaid(req.userId);
     res.json({ link_token: response.data.link_token });
   } catch (err) {
