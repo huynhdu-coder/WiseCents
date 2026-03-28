@@ -86,7 +86,3 @@ app.listen(PORT, () => {
   console.log(`WiseCents backend running on port ${PORT}`);
 });
 
-app.use((req, res, next) => {
-  console.log(new Date().toISOString(), req.method, req.originalUrl);
-  next();
-});
