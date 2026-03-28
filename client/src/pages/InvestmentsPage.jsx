@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Search,
   Wallet,
@@ -43,26 +43,26 @@ export default function InvestmentsPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  async function loadData(selected = symbol) {
+  const loadData = useCallback(async (selectedSymbol = symbol) => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
     const [portfolioData, quoteData] = await Promise.all([
       getPortfolio(),
-      getQuote(selected),
+      getQuote(selectedSymbol),
     ]);
 
     setPortfolio(portfolioData);
     setQuote(quoteData);
-  }
+  }, [symbol]);
 
-  async function refreshQuoteOnly(selected = symbol) {
+  const refreshQuoteOnly = useCallback(async (selectedSymbol = symbol) => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    const quoteData = await getQuote(selected);
+    const quoteData = await getQuote(selectedSymbol);
     setQuote(quoteData);
-  }
+  }, [symbol]);
 
   async function handleTransfer() {
     try {
@@ -158,9 +158,8 @@ export default function InvestmentsPage() {
     }
 
     init();
-  }, []);
+  }, [loadData, symbol]);
 
-  // Refresh quote immediately when selected symbol changes
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -168,9 +167,8 @@ export default function InvestmentsPage() {
     refreshQuoteOnly(symbol).catch((err) => {
       setError(err?.response?.data?.error || "Failed to refresh selected symbol.");
     });
-  }, [symbol]);
+  }, [symbol, refreshQuoteOnly]);
 
-  // Background refresh
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -180,9 +178,9 @@ export default function InvestmentsPage() {
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [symbol]);
+  }, [symbol, loadData]);
 
-  const positions = portfolio?.positions || [];
+  const positions = useMemo(() => portfolio?.positions || [], [portfolio]);
 
   const quickSymbols = useMemo(() => {
     const defaults = [
