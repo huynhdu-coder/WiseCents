@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import api from "../api/axios";
 
 const TYPE_ICONS = {
@@ -32,7 +33,6 @@ export default function NotificationBell() {
     return () => clearInterval(interval);
   }, []);
 
-  // Close on outside click
   useEffect(() => {
     const handler = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -108,10 +108,8 @@ export default function NotificationBell() {
         )}
       </button>
 
-      {/* Dropdown */}
       {open && (
         <div className="absolute right-0 top-10 w-80 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
-          {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
             <span className="font-semibold text-sm text-gray-800">
               Notifications
@@ -131,8 +129,6 @@ export default function NotificationBell() {
               </button>
             )}
           </div>
-
-          {/* Alert list */}
           <div className="max-h-96 overflow-y-auto divide-y divide-gray-50">
             {alerts.length === 0 ? (
               <div className="p-6 text-center text-sm text-gray-400">
@@ -175,15 +171,10 @@ export default function NotificationBell() {
               ))
             )}
           </div>
-
-          {/* Footer */}
           <div className="px-4 py-2 border-t border-gray-100 bg-gray-50">
-            <a
-              href="/settings"
-              className="text-xs text-wisegreen hover:underline"
-            >
+            <Link to="/dashboard/settings" onClick={() => setOpen(false)} className="text-xs text-wisegreen hover:underline">
               Manage notification settings →
-            </a>
+            </Link>
           </div>
         </div>
       )}

@@ -213,7 +213,6 @@ async function sendDigestForUser(transporter, user, newAlerts) {
 }
 
 export function startDigestCron() {
-  // "0 8 * * *" = 8:00 AM UTC every day
   cron.schedule("0 8 * * *", async () => {
     console.log("[Digest] Starting daily digest run...");
 
@@ -245,7 +244,6 @@ export function startDigestCron() {
     }
 
     console.log("[Digest] Done.");
-  });
-
-  console.log("[Digest] Daily digest cron scheduled (8:00 AM UTC).");
+  }, { timezone: "America/New_York" });
+  console.log("[Digest] Daily digest cron scheduled (8:00 AM EST).");
 }
