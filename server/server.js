@@ -9,8 +9,9 @@ import accountRoutes from "./routes/accountRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import goalRoutes from "./routes/goalRoutes.js";
 import investmentRoutes from "./routes/investmentRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
+import { startDigestCron } from "./services/digestService.js";
 import "dotenv/config";
-// import { startWeeklySync } from "./services/autoSyncService.js";
 
 const app = express();
 const isProduction = process.env.NODE_ENV === "production";
@@ -28,12 +29,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// app.use((req, res, next) => {
-//   console.log(new Date().toISOString(), req.method, req.originalUrl);
-//   next();
-// });
-
-//Auth limiter: strict
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: isProduction ? 20 : 200,
@@ -42,7 +37,6 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// General API limiter: relaxed
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: isProduction ? 500 : 5000,
@@ -68,6 +62,10 @@ app.use("/api/accounts", accountRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/goals", goalRoutes);
 app.use("/api/investments", investmentRoutes);
+app.use("/api/notifications", apiLimiter);
+app.use("/api/notifications", notificationRoutes);
+
+startDigestCron();
 
 app.get("/api/health", (req, res) => {
   res.json({ ok: true });

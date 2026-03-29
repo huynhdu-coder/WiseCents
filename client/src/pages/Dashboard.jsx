@@ -144,7 +144,7 @@ export default function Dashboard() {
       </h1>
 
       {/* Plaid Connect + Account Cards */}
-      <div className="flex gap-6 overflow-x-auto pb-4 items-start">
+      <div className="flex flex-wrap gap-6 pb-4 items-start">
         {linkToken && (
       <div className="min-w-[280px] bg-white border-2 border-dashed border-gray-300 
                       rounded-xl flex flex-col justify-center items-center 
