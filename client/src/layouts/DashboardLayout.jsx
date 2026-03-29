@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import { Outlet } from "react-router-dom"; 
 import AIChatWidget from "../components/AIChatWidget";
+import AlertToasts from "../components/AlertToasts";
 
 export default function DashboardLayout() {
   return (
@@ -23,6 +24,9 @@ export default function DashboardLayout() {
 
       {/* FLOATING AI CHAT W/ OWL LOGO*/}
       <AIChatWidget />
+
+      {/* Notification toasts (fixed, top-right) */}
+      <AlertToasts />
     </div>
   );
 }

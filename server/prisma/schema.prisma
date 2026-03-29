@@ -97,13 +97,33 @@ model users {
   advice_style          String?                 @default("balanced") @db.VarChar(50)
   change_tolerance      String?                 @default("moderate") @db.VarChar(50)
   ai_data_consent       String?                 @db.VarChar(10)
+  notif_email_digest    Boolean                 @default(true)
+  notif_budget_alerts   Boolean                 @default(true)
+  notif_goal_alerts     Boolean                 @default(true)
+  notif_budget_threshold Decimal?              @default(80) @db.Decimal(5, 2)
+  last_digest_sent      DateTime?               @db.Timestamp(6)
   bank_accounts         bank_accounts[]
   goals                 goals[]
   investment_transfers  investment_transfers[]
   paper_account         paper_accounts?
   password_reset_tokens password_reset_tokens[]
   plaid_items           plaid_items[]
+  spending_alerts       spending_alerts[]
   transactions          transactions[]
+}
+
+model spending_alerts {
+  alert_id   Int      @id @default(autoincrement())
+  user_id    Int
+  type       String   @db.VarChar(30)
+  title      String   @db.VarChar(150)
+  message    String
+  is_read    Boolean  @default(false)
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  users      users    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([user_id, is_read])
 }
 
 model goal_contributions {
