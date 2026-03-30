@@ -50,7 +50,10 @@ export default function Chat() {
       if (!res.ok) {
         setMessages((prev) => [
           ...prev,
-          { sender: "bot", text: data?.message || data?.error || "AI request failed." },
+          {
+            sender: "bot",
+            text: data?.error || data?.message || "I ran into a server error.",
+          },
         ]);
         return;
       }
@@ -62,7 +65,7 @@ export default function Chat() {
     } catch (err) {
       setMessages((prev) => [
         ...prev,
-        { sender: "bot", text: "Network error calling AI endpoint." },
+        { sender: "bot", text: "I can’t reach the backend right now." },
       ]);
     } finally {
       setLoading(false);
