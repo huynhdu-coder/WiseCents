@@ -1,4 +1,4 @@
-import pool from "../config/database.js";
+import prisma from "../config/prisma.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -17,73 +17,81 @@ class User {
     this.change_tolerance = row.change_tolerance;
     this.ai_data_consent = row.ai_data_consent;
     this.created_at = row.created_at;
+    this.updated_at = row.updated_at;
   }
 
   static async findByEmail(email) {
-    const result = await pool.query(
-      "SELECT * FROM users WHERE email = $1 LIMIT 1",
-      [email]
-    );
-    if (result.rows.length === 0) return null;
-    return new User(result.rows[0]);
+    const user = await prisma.users.findUnique({
+      where: { email },
+    });
+    return user ? new User(user) : null;
   }
 
   static async findById(id) {
-    const result = await pool.query(
-      "SELECT * FROM users WHERE user_id = $1 LIMIT 1",
-      [id]
-    );
-    if (result.rows.length === 0) return null;
-    return new User(result.rows[0]);
+    const user = await prisma.users.findUnique({
+      where: { user_id: id },
+    });
+    return user ? new User(user) : null;
   }
 
   static async create({
-    first_name, last_name, email, password, phone, dob,
-    primary_intent = 'general_budgeting',
-    advice_style = 'balanced',
-    change_tolerance = 'moderate'
+    first_name,
+    last_name,
+    email,
+    password,
+    phone,
+    dob,
+    primary_intent = "general_budgeting",
+    advice_style = "balanced",
+    change_tolerance = "moderate",
   }) {
     const hashed = await bcrypt.hash(password, 10);
-    const result = await pool.query(
-      `INSERT INTO users (
-        first_name, last_name, email, password, phone, dob, is_admin,
-        primary_intent, advice_style, change_tolerance
-      )
-       VALUES ($1, $2, $3, $4, $5, $6, false, $7, $8, $9)
-       RETURNING *`,
-      [first_name, last_name, email, hashed, phone, dob,
-       primary_intent, advice_style, change_tolerance]
-    );
-    return new User(result.rows[0]);
+
+    const user = await prisma.users.create({
+      data: {
+        first_name,
+        last_name,
+        email,
+        password: hashed,
+        phone,
+        dob: dob ? new Date(dob) : null,
+        is_admin: false,
+        primary_intent,
+        advice_style,
+        change_tolerance,
+      },
+    });
+
+    return new User(user);
   }
 
-  static async updatePreferences(userId, { primary_intent, advice_style, change_tolerance }) {
-    const result = await pool.query(
-      `UPDATE users
-       SET primary_intent = COALESCE($1, primary_intent),
-           advice_style = COALESCE($2, advice_style),
-           change_tolerance = COALESCE($3, change_tolerance),
-           updated_at = CURRENT_TIMESTAMP
-       WHERE user_id = $4
-       RETURNING *`,
-      [primary_intent, advice_style, change_tolerance, userId]
-    );
-    if (result.rows.length === 0) return null;
-    return new User(result.rows[0]);
+  static async updatePreferences(
+    userId,
+    { primary_intent, advice_style, change_tolerance }
+  ) {
+    const user = await prisma.users.update({
+      where: { user_id: userId },
+      data: {
+        ...(primary_intent !== undefined ? { primary_intent } : {}),
+        ...(advice_style !== undefined ? { advice_style } : {}),
+        ...(change_tolerance !== undefined ? { change_tolerance } : {}),
+        updated_at: new Date(),
+      },
+    });
+
+    return user ? new User(user) : null;
   }
 
-  // 🔹 Update AI data consent
   static async updateConsent(userId, ai_data_consent) {
-    const result = await pool.query(
-      `UPDATE users
-       SET ai_data_consent = $1,
-           updated_at = CURRENT_TIMESTAMP
-       WHERE user_id = $2
-       RETURNING *`,
-      [ai_data_consent, userId]
-    );
-    if (result.rows.length === 0) return null;
-    return new User(result.rows[0]);
+    const user = await prisma.users.update({
+      where: { user_id: userId },
+      data: {
+        ai_data_consent,
+        updated_at: new Date(),
+      },
+    });
+
+    return user ? new User(user) : null;
   }
 
   toPublicJSON() {
@@ -100,6 +108,7 @@ class User {
       change_tolerance: this.change_tolerance,
       ai_data_consent: this.ai_data_consent,
       created_at: this.created_at,
+      updated_at: this.updated_at,
     };
   }
 
@@ -108,11 +117,9 @@ class User {
   }
 
   generateToken() {
-    return jwt.sign(
-      { userId: this.user_id },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+    return jwt.sign({ userId: this.user_id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
   }
 }
 

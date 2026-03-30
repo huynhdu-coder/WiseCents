@@ -8,3 +8,11 @@ html, body {
   height: 100%;
   width: 100%;
 }
+/* Notification toast fade-in */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out both;
+}

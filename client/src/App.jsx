@@ -12,7 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import Chat from "./pages/Chat";
 import Reports from "./pages/Reports.jsx";
 import Settings from "./pages/Settings";
-import Charts from "./pages/Charts";
+import InvestmentsPage from "./pages/InvestmentsPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -45,7 +45,7 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="chat" element={<Chat />} />
             <Route path="reports" element={<Reports />} />
-            <Route path="charts" element={<Charts />} />
+            <Route path="investments" element={<InvestmentsPage />} />
             <Route path="settings" element={<Settings />} />
           </Route>
 
