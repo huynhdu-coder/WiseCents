@@ -73,7 +73,7 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-full bg-gray-50">
       {/* Header */}
       <div className="bg-wisegreen text-white p-4 text-lg font-semibold shadow-md flex items-center gap-2">
         <img src={owlLogo} alt="WiseCents Owl" className="w-12 h-12 rounded-full" />
