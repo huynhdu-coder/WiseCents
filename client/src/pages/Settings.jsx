@@ -14,6 +14,11 @@ export default function Settings() {
   const [message, setMessage] = useState("");
   const [consentLoading, setConsentLoading] = useState(false);
   const [consentMessage, setConsentMessage] = useState("");
+  const [studentEmail, setStudentEmail] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [studentMessage, setStudentMessage] = useState("");
+  const [studentStatus, setStudentStatus] = useState(null);
+  const [studentLoading, setStudentLoading] = useState(false);
 
   const [notifSettings, setNotifSettings] = useState({
     notif_email_digest: true,
@@ -23,6 +28,40 @@ export default function Settings() {
   });
   const [notifLoading, setNotifLoading] = useState(false);
   const [notifMessage, setNotifMessage] = useState("");
+  
+  const handleSendStudentCode = async () => {
+    setStudentLoading(true);
+    setStudentMessage("");
+    try {
+      const res = await api.post("/student-verification/request", {
+        email: studentEmail,
+      });
+      setStudentMessage(res.data.message);
+    } catch (err) {
+      setStudentMessage(err?.response?.data?.error || "Failed to send code");
+    } finally {
+      setStudentLoading(false);
+    }
+  };
+
+  const handleConfirmStudentCode = async () => {
+    setStudentLoading(true);
+    setStudentMessage("");
+    try {
+      const res = await api.post("/student-verification/confirm", {
+        email: studentEmail,
+        code: verificationCode,
+      });
+      setStudentMessage(res.data.message);
+
+      const statusRes = await api.get("/student-verification/status");
+      setStudentStatus(statusRes.data);
+    } catch (err) {
+      setStudentMessage(err?.response?.data?.error || "Failed to verify code");
+    } finally {
+      setStudentLoading(false);
+    }
+  };
 
   useEffect(() => {
     api.get("/user/profile").then((res) => {
@@ -41,6 +80,11 @@ export default function Settings() {
         notif_budget_threshold: res.data.notif_budget_threshold ?? 80,
       });
     }).catch((err) => console.error("Failed to load notification settings", err));
+
+    api.get("/student-verification/status")
+      .then((res) => setStudentStatus(res.data))
+      .catch(() => {
+      });
   }, []);
 
   const handleSubmit = async (e) => {
@@ -192,6 +236,71 @@ export default function Settings() {
           {notifLoading ? "Saving..." : "Save Notification Settings"}
         </button>
       </form>
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h2 className="text-lg font-semibold text-wisegreen mb-1">Student Discount</h2>
+        <p className="text-sm text-gray-500 mb-5">
+          Verify your academic email to unlock student pricing.
+        </p>
+
+        {studentStatus?.student_status === "verified" ? (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <p className="text-green-700 font-semibold">
+              ✅ Student discount active
+            </p>
+            <p className="text-sm text-gray-600 mt-1">
+              Verified email: {studentStatus.student_email}
+            </p>
+            <p className="text-sm text-gray-600">
+              Discount: {studentStatus.student_discount_percent}% off
+            </p>
+          </div>
+        ) : (
+          <>
+            <p className="text-sm text-gray-600 mb-3">
+              Enter your school email, then click <strong>Send Verification Code</strong>.
+              After you receive the code, enter it below and click <strong>Verify Email</strong>.
+            </p>
+
+            <input
+              type="email"
+              value={studentEmail}
+              onChange={(e) => setStudentEmail(e.target.value)}
+              placeholder="Enter your school email"
+              className="w-full border border-gray-300 rounded px-3 py-2 mb-3"
+            />
+
+            <button
+              type="button"
+              onClick={handleSendStudentCode}
+              disabled={studentLoading || !studentEmail}
+              className="bg-wisegreen text-white px-4 py-2 rounded mb-4 disabled:opacity-50"
+            >
+              {studentLoading ? "Sending..." : "Send Verification Code"}
+            </button>
+
+            <input
+              type="text"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+              placeholder="Enter verification code"
+              className="w-full border border-gray-300 rounded px-3 py-2 mb-3"
+            />
+
+            <button
+              type="button"
+              onClick={handleConfirmStudentCode}
+              disabled={studentLoading || !studentEmail || !verificationCode}
+              className="bg-wiseyellow text-black px-4 py-2 rounded disabled:opacity-50"
+            >
+              {studentLoading ? "Verifying..." : "Verify Email"}
+            </button>
+          </>
+        )}
+
+        {studentMessage && (
+          <p className="mt-3 text-sm text-gray-700">{studentMessage}</p>
+        )}
+      </div>
       <div className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-lg font-semibold text-wisegreen mb-1">AI Data Privacy</h2>
         <p className="text-sm text-gray-500 mb-5">
