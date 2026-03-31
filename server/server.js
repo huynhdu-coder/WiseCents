@@ -10,6 +10,7 @@ import aiRoutes from "./routes/aiRoutes.js";
 import goalRoutes from "./routes/goalRoutes.js";
 import investmentRoutes from "./routes/investmentRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import studentVerificationRoutes from "./routes/studentVerificationRoutes.js";
 import { startDigestCron } from "./services/digestService.js";
 import "dotenv/config";
 
@@ -56,6 +57,7 @@ app.use("/api/investments", apiLimiter);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/student-verification", studentVerificationRoutes);
 app.use("/api/plaid", plaidRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/accounts", accountRoutes);
