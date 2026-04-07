@@ -2,17 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
-  overflow: auto;
-  overscroll-behavior: none;
-  height: 100%;
-  width: 100%;
+:root {
+  --bg: 244 248 245;
+  --bg-sidebar: 21 98 69;
+  --surface: 255 255 255;
+  --surface-soft: 248 250 252;
+  --surface-muted: 240 247 243;
+  --border: 226 232 240;
+  --border-soft: 220 234 226;
+
+  --text: 15 23 42;
+  --text-muted: 100 116 139;
+
+  --primary: 21 87 64;
+  --primary-hover: 16 66 49;
+  --primary-soft: 220 243 230;
+
+  --success: 34 197 94;
+  --danger: 239 68 68;
+
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 15px;
+  --text-lg: 16px;
+  --text-xl: 18px;
+  --text-2xl: 22px;
+  --text-3xl: 26px;
+  --text-4xl: 32px;
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
 }
-/* Notification toast fade-in */
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
+
+.dark {
+  --bg: 7 18 14;
+  --bg-sidebar: 18 77 55;
+  --surface: 14 28 22;
+  --surface-soft: 17 35 28;
+  --surface-muted: 21 43 34;
+  --border: 39 61 50;
+  --border-soft: 47 79 63;
+
+  --text: 241 245 249;
+  --text-muted: 148 163 184;
+
+  --primary: 34 139 94;
+  --primary-hover: 26 110 75;
+  --primary-soft: 21 52 39;
+
+  --success: 74 222 128;
+  --danger: 248 113 113;
+
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 15px;
+  --text-lg: 16px;
+  --text-xl: 18px;
+  --text-2xl: 22px;
+  --text-3xl: 26px;
+  --text-4xl: 32px;
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
 }
-.animate-fade-in {
-  animation: fade-in 0.25s ease-out both;
+
+body {
+  @apply antialiased;
+  background-color: rgb(var(--bg));
+  color: rgb(var(--text));
 }

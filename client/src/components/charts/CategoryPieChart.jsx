@@ -25,9 +25,11 @@ export default function CategoryPieChart() {
 
   if (!Array.isArray(data) || data.length === 0) {
     return (
-      <div className="bg-white p-6 rounded-xl shadow h-[400px] flex items-center justify-center">
-        <p className="text-gray-500">No transaction data available</p>
-      </div>
+      <section className="rounded-xl2 border border-app-border bg-app-surface p-4 shadow-card sm:p-5">
+        <div className="flex h-[260px] items-center justify-center rounded-xl2 bg-app-soft">
+          <p className="text-sm text-app-muted">No transaction data available</p>
+        </div>
+      </section>
     );
   }
 
@@ -43,17 +45,25 @@ export default function CategoryPieChart() {
           "#34d399",
           "#6ee7b7",
         ],
+        borderWidth: 0,
       },
     ],
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow h-[400px]">
-      <h2 className="text-lg font-semibold mb-4">Spending by Category</h2>
+    <section className="rounded-xl2 border border-app-border bg-app-surface p-4 shadow-card sm:p-5">
+      <div className="mb-4">
+        <h2 className="text-xl font-bold text-app-text sm:text-2xl">
+          Spending by Category
+        </h2>
+        <p className="mt-1 text-sm text-app-muted">
+          Breakdown of your spending across categories
+        </p>
+      </div>
 
-      <div className="h-[300px]">
+      <div className="h-[260px] rounded-xl2 bg-app-soft p-3 sm:h-[300px] sm:p-4">
         <Pie data={chartData} options={{ maintainAspectRatio: false }} />
       </div>
-    </div>
+    </section>
   );
 }

@@ -1,30 +1,38 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center">
-      <h1 className="text-4xl font-bold text-wisegreen mb-4">Welcome to WiseCents</h1>
-      <p className="text-gray-600 max-w-md mb-8">
-        Track your spending, save smarter, and let our AI guide you toward financial freedom.
+    <div className="flex min-h-screen flex-col items-center justify-center bg-app-bg px-4 text-center">
+
+      {/* Title */}
+      <h1 className="text-3xl font-bold text-app-text sm:text-4xl">
+        Welcome to WiseCents
+      </h1>
+
+      {/* Subtitle */}
+      <p className="mt-3 max-w-md text-sm text-app-muted sm:text-base">
+        Track your spending, save smarter, and let AI guide you toward financial freedom.
       </p>
 
-      <div className="flex gap-4">
+      {/* Actions */}
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row">
         <Link
           to="/login"
-          className="bg-wisegreen text-white px-6 py-3 rounded-lg hover:bg-wisegreen/80 transition"
+          className="rounded-xl bg-app-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-app-primaryHover"
         >
           Log In
         </Link>
-        <a
-          href="/"
-          className="border border-wisegreen text-wisegreen px-6 py-3 rounded-lg hover:bg-wisegreen hover:text-white transition"
+
+        <Link
+          to="/register"
+          className="rounded-xl border border-app-border bg-app-surface px-6 py-3 text-sm font-semibold text-app-text transition hover:bg-app-soft"
         >
-          Learn More
-        </a>
+          Sign Up
+        </Link>
       </div>
 
-      <footer className="mt-12 text-gray-400 text-sm">
+      {/* Footer */}
+      <footer className="mt-10 text-xs text-app-muted">
         © {new Date().getFullYear()} WiseCents. All rights reserved.
       </footer>
     </div>

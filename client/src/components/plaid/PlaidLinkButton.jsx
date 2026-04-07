@@ -1,7 +1,8 @@
 import { usePlaidLink } from "react-plaid-link";
 import { API_BASE } from "../../config/apiBase";
 
-export default function PlaidLinkButton({ linkToken, onSuccess }) {
+export default function PlaidLinkButton({ linkToken, onSuccess, label = "Connect Account",
+  className = "", }) {
   const { open, ready } = usePlaidLink({
     token: linkToken,
     onSuccess: async (public_token) => {
@@ -37,9 +38,9 @@ export default function PlaidLinkButton({ linkToken, onSuccess }) {
     <button
       onClick={() => open()}
       disabled={!ready}
-      className="bg-wisegreen text-white px-6 py-3 rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+      className={`rounded-full bg-[#155740] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#124735] ${className}`}
     >
-      Connect Bank Account
+      {label}
     </button>
   );
 }

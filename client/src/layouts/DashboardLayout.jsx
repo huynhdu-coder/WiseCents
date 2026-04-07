@@ -1,31 +1,25 @@
 import React from "react";
-import Sidebar from "../components/Sidebar";
-import Topbar from "../components/Topbar";
-import { Outlet } from "react-router-dom"; 
+import { Outlet } from "react-router-dom";
+import Sidebar from "../components/layout/Sidebar";
 import AIChatWidget from "../components/AIChatWidget";
 import AlertToasts from "../components/AlertToasts";
 
 export default function DashboardLayout() {
   return (
-    <div className="flex min-h-screen bg-wisewhite font-body">
-      {/* Sidebar */}
-      <Sidebar />
+    <div className="h-screen overflow-hidden bg-app-bg text-app-text font-body">
+      <div className="flex h-full">
+        <Sidebar />
 
-      {/* Main content area */}
-      <div className="flex-1 flex flex-col">
-        {/* Topbar */}
-        <Topbar />
-
-        {/* Main content */}
-        <main className="flex-1 p-6">
-          <Outlet />
-        </main>
+        <div className="min-w-0 flex-1">
+          <main className="h-full overflow-y-auto">
+            <div className="mx-auto max-w-[1400px] px-4 py-4 sm:px-5 lg:px-6">
+              <Outlet />
+            </div>
+          </main>
+        </div>
       </div>
 
-      {/* FLOATING AI CHAT W/ OWL LOGO*/}
       <AIChatWidget />
-
-      {/* Notification toasts (fixed, top-right) */}
       <AlertToasts />
     </div>
   );

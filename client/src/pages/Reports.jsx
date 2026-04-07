@@ -3,6 +3,7 @@ import CategoryPieChart from "../components/charts/CategoryPieChart";
 import MonthlyBarChart from "../components/charts/MonthlyBarChart";
 import TransactionsPanel from "../components/charts/TransactionsPanel";
 import FinancialAuditCard from "../components/charts/FinancialAuditCard";
+import PageHeader from "../components/layout/PageHeader";
 
 const API_BASE =
   process.env.REACT_APP_BACKEND || "http://localhost:5000";
@@ -73,58 +74,62 @@ export default function Reports() {
 
   return (
     <div>
-
-      {/* Filter */}
-      <div className="bg-white rounded shadow p-4 mb-6 flex flex-wrap gap-4 items-center">
-
-        <span className="font-semibold text-gray-600">
-          Filters
-        </span>
-
-        <select
-          value={filters.dateRange}
-          onChange={(e) =>
-            setFilters({ ...filters, dateRange: e.target.value })
-          }
-          className="appearance-none border rounded px-3 py-2 bg-gray-50"
-        >
-          <option value="30">Last 30D</option>
-          <option value="90">Last 90D</option>
-          <option value="365">Last 365D</option>
-        </select>
-
-        <select
-          value={filters.account}
-          onChange={(e) =>
-            setFilters({ ...filters, account: e.target.value })
-          }
-          className="appearance-none border rounded px-3 py-2 bg-gray-50"
-        >
-          <option value="all">All Accounts</option>
-          <option value="checking">Checking</option>
-          <option value="savings">Savings</option>
-        </select>
-
-        <select
-          value={filters.category}
-          onChange={(e) =>
-            setFilters({ ...filters, category: e.target.value })
-          }
-          className="appearance-none border rounded px-3 py-2 bg-gray-50 min-w-[160px]"
-        >
-          <option value="all">All Categories</option>
-          <option value="Food">Food</option>
-          <option value="Groceries">Groceries</option>
-          <option value="Shopping">Shopping</option>
-          <option value="Entertainment">Entertainment</option>
-          <option value="Transportation">Transportation</option>
-          <option value="Health">Health</option>
-          <option value="Home">Home</option>
-        </select>
-
+      <div className="flex">
+        
       </div>
+      <PageHeader
+        title="Financial Reports"
+        subtitle="Analyze your spending patterns and get insights to optimize your finances."
+        right={
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm font-semibold text-app-muted">
+              Filters
+            </span>
 
+            <select
+              value={filters.dateRange}
+              onChange={(e) =>
+                setFilters({ ...filters, dateRange: e.target.value })
+              }
+              className="appearance-none rounded-xl border border-app-border bg-app-surface px-3 py-2 text-sm text-app-text outline-none focus:border-app-primary"
+            >
+              <option value="30">Last 30D</option>
+              <option value="90">Last 90D</option>
+              <option value="365">Last 365D</option>
+            </select>
 
+            <select
+              value={filters.account}
+              onChange={(e) =>
+                setFilters({ ...filters, account: e.target.value })
+              }
+              className="appearance-none rounded-xl border border-app-border bg-app-surface px-3 py-2 text-sm text-app-text outline-none focus:border-app-primary"
+            >
+              <option value="all">All Accounts</option>
+              <option value="checking">Checking</option>
+              <option value="savings">Savings</option>
+            </select>
+
+            <select
+              value={filters.category}
+              onChange={(e) =>
+                setFilters({ ...filters, category: e.target.value })
+              }
+              className="min-w-[160px] appearance-none rounded-xl border border-app-border bg-app-surface px-3 py-2 text-sm text-app-text outline-none focus:border-app-primary"
+            >
+              <option value="all">All Categories</option>
+              <option value="Food">Food</option>
+              <option value="Groceries">Groceries</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Transportation">Transportation</option>
+              <option value="Health">Health</option>
+              <option value="Home">Home</option>
+            </select>
+          </div>
+        }
+      />
+      
       {/* Tranasactions + Audit */}
       <div className="grid grid-cols-10 gap-6">
 
