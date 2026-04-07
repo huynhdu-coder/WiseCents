@@ -1,30 +1,45 @@
-/** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: "class",
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
-      colors: {
-        // 🟢 WiseCents Color Palette
-        wisegreen: "#1B4D3E",
-        wiselight: "#A5B5AA",
-        wiseyellow: "#C9A227",
-        wisewhite: "#F8F9FA",
-        wisetext: "#222222",
+      fontSize: {
+        xs: "var(--text-xs)",
+        sm: "var(--text-sm)",
+        base: "var(--text-base)",
+        md: "var(--text-md)",
+        lg: "var(--text-lg)",
+        xl: "var(--text-xl)",
+        "2xl": "var(--text-2xl)",
+        "3xl": "var(--text-3xl)",
+        "4xl": "var(--text-4xl)",
       },
-      fontFamily: {
-        heading: ["Poppins", "sans-serif"],
-        body: ["Inter", "sans-serif"],
+      colors: {
+        app: {
+          bg: "rgb(var(--bg) / <alpha-value>)",
+          sidebar: "rgb(var(--bg-sidebar) / <alpha-value>)",
+          surface: "rgb(var(--surface) / <alpha-value>)",
+          soft: "rgb(var(--surface-soft) / <alpha-value>)",
+          mutedSurface: "rgb(var(--surface-muted) / <alpha-value>)",
+          border: "rgb(var(--border) / <alpha-value>)",
+          borderSoft: "rgb(var(--border-soft) / <alpha-value>)",
+          text: "rgb(var(--text) / <alpha-value>)",
+          muted: "rgb(var(--text-muted) / <alpha-value>)",
+          primary: "rgb(var(--primary) / <alpha-value>)",
+          primaryHover: "rgb(var(--primary-hover) / <alpha-value>)",
+          primarySoft: "rgb(var(--primary-soft) / <alpha-value>)",
+          success: "rgb(var(--success) / <alpha-value>)",
+          danger: "rgb(var(--danger) / <alpha-value>)",
+        },
       },
       borderRadius: {
-        card: "16px",
+        xl2: "1.25rem",
+        xl3: "1.75rem",
       },
       boxShadow: {
-        soft: "0 2px 6px rgba(0, 0, 0, 0.1)",
+        card: "0 10px 30px rgba(2, 8, 23, 0.06)",
       },
     },
   },
-  plugins: [
-    require("@tailwindcss/forms"), // optional plugin for better form UI
-  ],
-}
-
+  plugins: [],
+};

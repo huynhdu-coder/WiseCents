@@ -1,48 +1,47 @@
-import { useState, useEffect, useCallback} from "react";
-import PlaidLinkButton from "../components/plaid/PlaidLinkButton";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { API_BASE } from "../config/apiBase";
-import AccountCard from "../components/accounts/AccountCard";
-import GoalSection from "../components/GoalSection";
-import CreateGoalForm from "../components/CreateGoalForm";
+import GoalPanel from "../components/dashboard/GoalPanel";
+import DashboardHero from "../components/dashboard/DashboardHero";
+import StatsGrid from "../components/dashboard/StatsGrid";
+import AccountSection from "../components/dashboard/AccountSection";
+import SmartInsightCard from "../components/dashboard/SmartInsightCard";
+import ExpenseLineChart from "../components/dashboard/ExpenseLineChart";
+import GoalFormModal from "../components/goals/GoalFormModal";
 
 export default function Dashboard() {
   const [linkToken, setLinkToken] = useState(null);
   const [accounts, setAccounts] = useState([]);
   const [goals, setGoals] = useState([]);
   const [showGoalForm, setShowGoalForm] = useState(false);
-  
+  const [monthlyData, setMonthlyData] = useState([]);
 
   const token = localStorage.getItem("token");
-  
-  //Fetch accounts function
+
   const fetchAccounts = useCallback(async () => {
-  if (!token) return;
+    if (!token) return;
 
-  try {
-    const res = await fetch(`${API_BASE}/api/accounts`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      const res = await fetch(`${API_BASE}/api/accounts`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    // FIX
-    if (Array.isArray(data)) {
-      setAccounts(data);
-    } else if (Array.isArray(data.accounts)) {
-      setAccounts(data.accounts);
-    } else {
+      if (Array.isArray(data)) {
+        setAccounts(data);
+      } else if (Array.isArray(data.accounts)) {
+        setAccounts(data.accounts);
+      } else {
+        setAccounts([]);
+      }
+    } catch (error) {
+      console.error("Error fetching accounts:", error);
       setAccounts([]);
     }
+  }, [token]);
 
-  } catch (error) {
-    console.error("Error fetching accounts:", error);
-    setAccounts([]);
-  }
-}, [token]);
-
-  // Delete account function
   const deleteAccount = async (accountId) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this account?"
@@ -51,77 +50,101 @@ export default function Dashboard() {
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(
-        `${API_BASE}/api/accounts/${accountId}/delete`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await fetch(`${API_BASE}/api/accounts/${accountId}/delete`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!res.ok) {
         throw new Error("Failed to delete account");
       }
 
-      // Refresh account list
       fetchAccounts();
-
     } catch (error) {
       console.error("Delete account error:", error);
       alert("Failed to delete account.");
     }
   };
 
-  // Fetch goals function
+  const fetchMonthlyData = useCallback(async () => {
+    if (!token) {
+      setMonthlyData([]);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/reports/monthly-report`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Monthly report fetch failed:", data);
+        setMonthlyData([]);
+        return;
+      }
+
+      const normalized = Object.keys(data || {})
+        .sort()
+        .map((month) => ({
+          month,
+          income: Number(data[month]?.income || 0),
+          expenses: Number(data[month]?.expenses || 0),
+          net: Number(data[month]?.net || 0),
+        }));
+
+      setMonthlyData(normalized);
+    } catch (error) {
+      console.error("Error fetching monthly data:", error);
+      setMonthlyData([]);
+    }
+  }, [token]);
+
   const fetchGoals = useCallback(async () => {
-  if (!token) {
-    setGoals([]);
-    return;
-  }
-
-  try {
-    const res = await fetch(`${API_BASE}/api/goals`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await res.json();
-
-
-    if (!res.ok) {
-      console.error("Goals fetch failed:", data);
+    if (!token) {
       setGoals([]);
       return;
     }
 
-    if (Array.isArray(data)) {
-      setGoals(data);
-    } else {
+    try {
+      const res = await fetch(`${API_BASE}/api/goals`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Goals fetch failed:", data);
+        setGoals([]);
+        return;
+      }
+
+      if (Array.isArray(data)) {
+        setGoals(data);
+      } else {
+        setGoals([]);
+      }
+    } catch (error) {
+      console.error("Error fetching goals:", error);
       setGoals([]);
     }
+  }, [token]);
 
-  } catch (error) {
-    console.error("Error fetching goals:", error);
-    setGoals([]);
-  }
-}, [token]);
-
-  // Fetch Plaid link token
   useEffect(() => {
     if (!token) return;
 
-    fetch(`${API_BASE}/api/plaid/create_link_token`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
+    fetch(`${API_BASE}/api/plaid/create_link_token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         setLinkToken(data.link_token);
@@ -129,72 +152,82 @@ export default function Dashboard() {
       .catch(console.error);
   }, [token]);
 
-
-  // Load accounts on page load
   useEffect(() => {
     fetchAccounts();
     fetchGoals();
-  }, [fetchAccounts, fetchGoals]);
+    fetchMonthlyData();
+  }, [fetchAccounts, fetchGoals, fetchMonthlyData]);
+
+  const totalBalance = useMemo(() => {
+    return accounts.reduce((sum, acc) => {
+      return sum + Number(acc.current_balance || 0);
+    }, 0);
+  }, [accounts]);
+
+  const activeGoals = useMemo(() => {
+    return goals.filter((goal) => {
+      const current = Number(goal.current_amount || 0);
+      const target = Number(goal.target_amount || 0);
+      return target > 0 && current < target;
+    }).length;
+  }, [goals]);
+
+  const goalCompletion = useMemo(() => {
+    if (!goals.length) return 0;
+
+    const totalCurrent = goals.reduce(
+      (sum, goal) => sum + Number(goal.current_amount || 0),
+      0
+    );
+
+    const totalTarget = goals.reduce(
+      (sum, goal) => sum + Number(goal.target_amount || 0),
+      0
+    );
+
+    if (totalTarget <= 0) return 0;
+
+    return Math.round((totalCurrent / totalTarget) * 100);
+  }, [goals]);
 
   return (
-    <div className="p-8 bg-gray-100 min-h-screen">
+    <>
+      <DashboardHero onManageGoals={() => setShowGoalForm(true)} />
 
-      <h1 className="text-2xl font-bold text-wisegreen mb-2">
-        Dashboard
-      </h1>
+      <StatsGrid
+        totalBalance={totalBalance}
+        linkedAccounts={accounts.length}
+        activeGoals={activeGoals}
+        goalCompletion={goalCompletion}
+      />
 
-      {/* Plaid Connect + Account Cards */}
-      <div className="flex flex-wrap gap-6 pb-4 items-start">
-        {linkToken && (
-      <div className="min-w-[280px] bg-white border-2 border-dashed border-gray-300 
-                      rounded-xl flex flex-col justify-center items-center 
-                      p-6 hover:border-wisegreen hover:bg-green-50 
-                      transition-all duration-200 shadow-sm">
-        
-        <div className="text-3xl text-wisegreen mb-2">+</div>
-        
-        <PlaidLinkButton
+      <section className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        <AccountSection
           linkToken={linkToken}
-          onSuccess={fetchAccounts}
-          label="Add Account"
+          accounts={accounts}
+          fetchAccounts={fetchAccounts}
+          deleteAccount={deleteAccount}
         />
 
-      </div>
-    )}
+        <ExpenseLineChart />
 
-        {/* Accounts Section */}
-        {accounts.map((acc) => (
-          <AccountCard
-            key={acc.account_id}
-            account={acc}
-            onDelete={deleteAccount}
-          />
-        ))}
-      </div>
+        <GoalPanel
+          goals={goals}
+          fetchGoals={fetchGoals}
+          onAddGoal={() => setShowGoalForm(true)}
+        />
 
-      {/* ADD GOAL BUTTON */}
-      <div className="mt-8">
-        <button
-          onClick={() => setShowGoalForm(!showGoalForm)}
-          className="bg-wisegreen text-white px-6 py-2 rounded-xl shadow hover:shadow-lg transition"
-        >
-          + Add Goal
-        </button>
-      </div>
+        <SmartInsightCard
+          monthlyData={monthlyData}
+          goals={goals}
+        />
+      </section>
 
-
-      {/* GOAL FORM */}
-      {showGoalForm && (
-        <div className="mt-6">
-          <CreateGoalForm onCreated={fetchGoals} />
-        </div>
-      )}
-
-      {/* GOAL SECTION */}
-      <div className="mt-10">
-        <GoalSection goals={goals} refreshGoals={fetchGoals}/>
-      </div>
-
-    </div>
+      <GoalFormModal
+        open={showGoalForm}
+        onClose={() => setShowGoalForm(false)}
+        onCreated={fetchGoals}
+      />
+    </>
   );
 }

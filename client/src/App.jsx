@@ -12,7 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import Chat from "./pages/Chat";
 import Reports from "./pages/Reports.jsx";
 import Settings from "./pages/Settings";
-import InvestmentsPage from "./pages/InvestmentsPage";
+import InvestmentsPage from "./pages/Investments.jsx";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PrivacyPolicy from "./pages/PrivacyPolicy";

@@ -5,7 +5,6 @@ import {
   TrendingUp,
   Landmark,
   Repeat,
-  ArrowUpRight,
   Activity,
   BarChart3,
 } from "lucide-react";
@@ -18,6 +17,7 @@ import PositionCards from "../components/investments/PositionCards";
 import StockOverview from "../components/investments/StockOverview";
 import TradePanel from "../components/investments/TradePanel";
 import TransferPanel from "../components/investments/TransferPanel";
+import PageHeader from "../components/layout/PageHeader";
 
 import { formatCurrency } from "../utils/investmentFormatters";
 import {
@@ -43,26 +43,32 @@ export default function InvestmentsPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  const loadData = useCallback(async (selectedSymbol = symbol) => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+  const loadData = useCallback(
+    async (selectedSymbol = symbol) => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
-    const [portfolioData, quoteData] = await Promise.all([
-      getPortfolio(),
-      getQuote(selectedSymbol),
-    ]);
+      const [portfolioData, quoteData] = await Promise.all([
+        getPortfolio(),
+        getQuote(selectedSymbol),
+      ]);
 
-    setPortfolio(portfolioData);
-    setQuote(quoteData);
-  }, [symbol]);
+      setPortfolio(portfolioData);
+      setQuote(quoteData);
+    },
+    [symbol]
+  );
 
-  const refreshQuoteOnly = useCallback(async (selectedSymbol = symbol) => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+  const refreshQuoteOnly = useCallback(
+    async (selectedSymbol = symbol) => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
-    const quoteData = await getQuote(selectedSymbol);
-    setQuote(quoteData);
-  }, [symbol]);
+      const quoteData = await getQuote(selectedSymbol);
+      setQuote(quoteData);
+    },
+    [symbol]
+  );
 
   async function handleTransfer() {
     try {
@@ -151,7 +157,9 @@ export default function InvestmentsPage() {
         await ensurePaperAccount();
         await loadData(symbol);
       } catch (err) {
-        setError(err?.response?.data?.error || "Failed to load investments page.");
+        setError(
+          err?.response?.data?.error || "Failed to load investments page."
+        );
       } finally {
         setLoading(false);
       }
@@ -165,7 +173,9 @@ export default function InvestmentsPage() {
     if (!token) return;
 
     refreshQuoteOnly(symbol).catch((err) => {
-      setError(err?.response?.data?.error || "Failed to refresh selected symbol.");
+      setError(
+        err?.response?.data?.error || "Failed to refresh selected symbol."
+      );
     });
   }, [symbol, refreshQuoteOnly]);
 
@@ -228,6 +238,7 @@ export default function InvestmentsPage() {
 
   const filteredSymbols = useMemo(() => {
     if (!search.trim()) return quickSymbols;
+
     return quickSymbols.filter((item) =>
       item.symbol.toLowerCase().includes(search.toLowerCase())
     );
@@ -239,7 +250,8 @@ export default function InvestmentsPage() {
     investedValue: Number(portfolio?.investedValue || 0),
     totalValue: Number(portfolio?.totalValue || 0),
     totalGainLoss:
-      Number(portfolio?.totalValue || 0) - Number(portfolio?.startingBalance || 0),
+      Number(portfolio?.totalValue || 0) -
+      Number(portfolio?.startingBalance || 0),
   };
 
   const bestPerformer = [...positions].sort(
@@ -247,33 +259,31 @@ export default function InvestmentsPage() {
   )[0];
 
   if (!portfolio && loading) {
-    return <div className="p-6">Loading...</div>;
+    return (
+      <div className="p-4 text-sm text-app-muted sm:p-6">Loading...</div>
+    );
   }
 
   return (
-    <div className="space-y-6 p-4 md:p-6 xl:p-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          Paper Investing
-        </h1>
-        <p className="mt-2 text-slate-500">
-          Transfer virtual cash, buy stocks, and track your portfolio performance.
-        </p>
-      </div>
+    <div className="space-y-4">
+      <PageHeader
+        title="Paper Investing"
+        subtitle="Transfer virtual cash, buy stocks, and track your portfolio performance."
+      />
 
-      {message ? (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+      {message && (
+        <div className="rounded-xl2 border border-app-border bg-app-primarySoft px-4 py-3 text-sm text-app-primary">
           {message}
         </div>
-      ) : null}
+      )}
 
-      {error ? (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+      {error && (
+        <div className="rounded-xl2 border border-app-border bg-app-danger/10 px-4 py-3 text-sm text-app-danger">
           {error}
         </div>
-      ) : null}
+      )}
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
         <StatCard
           title="Investment Cash"
           value={formatCurrency(summary.cashBalance)}
@@ -300,19 +310,19 @@ export default function InvestmentsPage() {
         />
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)_360px]">
-        <div className="space-y-6">
+      <div className="grid gap-4 xl:grid-cols-[280px_minmax(0,1fr)_360px]">
+        <div className="space-y-4">
           <SectionCard
             title="Watchlist / Symbols"
-            right={<BarChart3 className="h-4 w-4 text-slate-400" />}
+            right={<BarChart3 className="h-4 w-4 text-app-muted" />}
           >
             <div className="relative mb-4">
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-app-muted" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search symbol"
-                className="w-full rounded-2xl border border-slate-200 py-3 pl-11 pr-4 outline-none focus:border-slate-400"
+                className="w-full rounded-xl border border-app-border bg-app-surface py-2.5 pl-10 pr-3 text-sm text-app-text outline-none focus:border-app-primary"
               />
             </div>
 
@@ -332,20 +342,24 @@ export default function InvestmentsPage() {
 
           <SectionCard
             title="Quick Stats"
-            right={<Activity className="h-4 w-4 text-slate-400" />}
+            right={<Activity className="h-4 w-4 text-app-muted" />}
           >
             <div className="space-y-3 text-sm">
-              <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
-                <span className="text-slate-500">Positions</span>
-                <span className="font-medium text-slate-900">{positions.length}</span>
+              <div className="flex items-center justify-between rounded-xl2 bg-app-soft px-4 py-3">
+                <span className="text-app-muted">Positions</span>
+                <span className="font-medium text-app-text">
+                  {positions.length}
+                </span>
               </div>
-              <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
-                <span className="text-slate-500">Selected Symbol</span>
-                <span className="font-medium text-slate-900">{symbol}</span>
+
+              <div className="flex items-center justify-between rounded-xl2 bg-app-soft px-4 py-3">
+                <span className="text-app-muted">Selected Symbol</span>
+                <span className="font-medium text-app-text">{symbol}</span>
               </div>
-              <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
-                <span className="text-slate-500">Best Performer</span>
-                <span className="font-medium text-slate-900">
+
+              <div className="flex items-center justify-between rounded-xl2 bg-app-soft px-4 py-3">
+                <span className="text-app-muted">Best Performer</span>
+                <span className="font-medium text-app-text">
                   {bestPerformer?.symbol || "-"}
                 </span>
               </div>
@@ -353,21 +367,17 @@ export default function InvestmentsPage() {
           </SectionCard>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           <StockOverview symbol={symbol} quote={quote} />
 
-          <SectionCard
-            title="Positions Table"
-            right={<ArrowUpRight className="h-4 w-4 text-slate-400" />}
-          >
-            <HoldingsTable holdings={positions} onSelect={setSymbol} />
-          </SectionCard>
+          <SectionCard title="Your Holdings">
+            <div className="hidden lg:block">
+              <HoldingsTable holdings={positions} onSelect={setSymbol} />
+            </div>
 
-          <SectionCard
-            title="Position Cards"
-            right={<ArrowUpRight className="h-4 w-4 text-slate-400" />}
-          >
-            <PositionCards holdings={positions} onSelect={setSymbol} />
+            <div className="lg:hidden">
+              <PositionCards holdings={positions} onSelect={setSymbol} />
+            </div>
           </SectionCard>
         </div>
 
