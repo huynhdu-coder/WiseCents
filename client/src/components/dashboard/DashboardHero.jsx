@@ -1,7 +1,7 @@
 import NotificationBell from "../NotificationBell";
 import { useNavigate } from "react-router-dom";
 
-export default function DashboardHero({ onManageGoals }) {
+export default function DashboardHero() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const firstName =
@@ -20,13 +20,10 @@ export default function DashboardHero({ onManageGoals }) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-app-border bg-app-soft text-app-text transition hover:bg-app-mutedSurface"
-            aria-label="Notifications"
-          >
+          
+          <div>
             <NotificationBell className="text-base" />
-          </button>
+          </div>
 
           <button
             type="button"

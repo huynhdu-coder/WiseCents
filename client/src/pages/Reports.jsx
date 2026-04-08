@@ -73,10 +73,7 @@ export default function Reports() {
   }, [filters]);
 
   return (
-    <div>
-      <div className="flex">
-        
-      </div>
+    <div className="space-y-6">
       <PageHeader
         title="Financial Reports"
         subtitle="Analyze your spending patterns and get insights to optimize your finances."
@@ -115,7 +112,7 @@ export default function Reports() {
               onChange={(e) =>
                 setFilters({ ...filters, category: e.target.value })
               }
-              className="min-w-[160px] appearance-none rounded-xl border border-app-border bg-app-surface px-3 py-2 text-sm text-app-text outline-none focus:border-app-primary"
+              className="min-w-[150px] appearance-none rounded-xl border border-app-border bg-app-surface px-3 py-2 text-sm text-app-text outline-none focus:border-app-primary"
             >
               <option value="all">All Categories</option>
               <option value="Food">Food</option>
@@ -129,10 +126,9 @@ export default function Reports() {
           </div>
         }
       />
-      
-      {/* Tranasactions + Audit */}
-      <div className="grid grid-cols-10 gap-6">
 
+      {/* Transactions + Audit */}
+      <div className="grid grid-cols-10 gap-4">
         <TransactionsPanel
           transactions={transactions}
           page={page}
@@ -141,16 +137,13 @@ export default function Reports() {
         />
 
         <FinancialAuditCard audit={audit} />
-
       </div>
-
 
       {/* Charts */}
-      <div className="grid md:grid-cols-2 gap-6 mt-10">
-        <CategoryPieChart />
-        <MonthlyBarChart />
+      <div className="grid md:grid-cols-2 gap-4 mt-6">
+        <CategoryPieChart filters={filters} />
+        <MonthlyBarChart filters={filters} />
       </div>
-
     </div>
   );
 }
