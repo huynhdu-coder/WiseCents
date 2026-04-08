@@ -1,99 +1,120 @@
 import FinancialHealthGauge from "./FinancialHealthGauge";
 
 export default function FinancialAuditCard({ audit }) {
-
   if (!audit) {
     return (
-      <div className="col-span-3 bg-white rounded shadow p-4">
-        <p className="text-gray-500">Loading audit...</p>
+      <div className="col-span-3 rounded-[24px] border border-app-border bg-app-surface p-5 shadow-card">
+        <p className="text-sm text-app-muted">Loading audit...</p>
       </div>
     );
   }
 
   const getSavingsColor = (rate) => {
-    if (rate >= 0.2) return "text-green-600";
+    if (rate >= 0.2) return "text-green-500";
     if (rate >= 0.1) return "text-yellow-500";
     return "text-red-500";
   };
 
   const getSpendingColor = (ratio) => {
-    if (ratio <= 0.7) return "text-green-600";
+    if (ratio <= 0.7) return "text-green-500";
     if (ratio <= 0.9) return "text-yellow-500";
     return "text-red-500";
   };
 
   const getHousingColor = (ratio) => {
-    if (ratio <= 0.3) return "text-green-600";
+    if (ratio <= 0.3) return "text-green-500";
     if (ratio <= 0.4) return "text-yellow-500";
     return "text-red-500";
   };
 
   const getEmergencyColor = (months) => {
-    if (months >= 6) return "text-green-600";
+    if (months >= 6) return "text-green-500";
     if (months >= 3) return "text-yellow-500";
     return "text-red-500";
   };
 
   return (
-    <div className="col-span-3 bg-white rounded shadow p-4">
+    <div className="col-span-3 flex flex-col rounded-[24px] border border-app-border bg-app-surface p-5 shadow-card">
 
-      <h2 className="text-lg font-semibold mb-4">
-        Financial Audit
-      </h2>
+      {/* Header */}
+      <div className="mb-4">
+        <h2 className="text-xl font-bold text-app-text sm:text-2xl">
+          Financial Audit
+        </h2>
+        <p className="text-sm text-app-muted">
+          Your financial health overview
+        </p>
+      </div>
 
+      {/* Metrics */}
       <div className="space-y-3 text-sm">
 
-        <div className="flex justify-between">
-          <span>Savings Rate</span>
-          <span className={getSavingsColor(audit.savingsRate)}>
+        <div className="flex items-center justify-between">
+          <span className="text-app-muted">Savings Rate</span>
+          <span className={`font-semibold ${getSavingsColor(audit.savingsRate)}`}>
             {(audit.savingsRate * 100).toFixed(0)}%
           </span>
         </div>
 
-        <div className="flex justify-between">
-          <span>Spending Ratio</span>
-          <span className={getSpendingColor(audit.spendingRatio)}>
+        <div className="flex items-center justify-between">
+          <span className="text-app-muted">Spending Ratio</span>
+          <span className={`font-semibold ${getSpendingColor(audit.spendingRatio)}`}>
             {(audit.spendingRatio * 100).toFixed(0)}%
           </span>
         </div>
 
-        <div className="flex justify-between">
-          <span>Housing Cost</span>
-          <span className={getHousingColor(audit.housingRatio)}>
+        <div className="flex items-center justify-between">
+          <span className="text-app-muted">Housing Cost</span>
+          <span className={`font-semibold ${getHousingColor(audit.housingRatio)}`}>
             {(audit.housingRatio * 100).toFixed(0)}%
           </span>
         </div>
 
-        <div className="flex justify-between">
-          <span>Emergency Fund</span>
-          <span className={getEmergencyColor(audit.emergencyFundMonths)}>
-            {(audit.emergencyFundMonths ?? 0).toFixed(1)} months
+        <div className="flex items-center justify-between">
+          <span className="text-app-muted">Emergency Fund</span>
+          <span className={`font-semibold ${getEmergencyColor(audit.emergencyFundMonths)}`}>
+            {(audit.emergencyFundMonths ?? 0).toFixed(1)} mo
           </span>
         </div>
 
-        <div className="flex justify-between">
-          <span>Monthly Cash Flow</span>
-          <span className={(audit.monthlyCashFlow ?? 0) > 0 ? "text-green-600" : "text-red-500"}>
+        <div className="flex items-center justify-between">
+          <span className="text-app-muted">Cash Flow</span>
+          <span
+            className={`font-semibold ${
+              (audit.monthlyCashFlow ?? 0) > 0
+                ? "text-app-primary"
+                : "text-red-500"
+            }`}
+          >
             ${(audit.monthlyCashFlow ?? 0).toFixed(0)}
           </span>
         </div>
 
-        <div className="flex justify-between">
-          <span>Top Spending</span>
-          <span>{audit.topCategory ?? "N/A"}</span>
+        <div className="flex items-center justify-between">
+          <span className="text-app-muted">Top Spending</span>
+          <span className="font-semibold text-app-text">
+            {audit.topCategory ?? "N/A"}
+          </span>
         </div>
 
-        <div className="flex justify-between">
-          <span>Subscriptions</span>
-          <span>{audit.subscriptionCount ?? 0}</span>
+        <div className="flex items-center justify-between">
+          <span className="text-app-muted">Subscriptions</span>
+          <span className="font-semibold text-app-text">
+            {audit.subscriptionCount ?? 0}
+          </span>
         </div>
-
       </div>
 
-      <div className="mt-6 text-center">
-        <div className="mt-6">
-          <FinancialHealthGauge score={audit.score ?? 0} />
-        </div>
+      {/* Divider */}
+      <div className="my-5 border-t border-app-border" />
+
+      {/* Score */}
+      <div className="flex flex-col items-center justify-center">
+        <p className="text-sm text-app-muted mb-2">
+          Overall Score
+        </p>
+
+        <FinancialHealthGauge score={audit.score ?? 0} />
       </div>
 
     </div>

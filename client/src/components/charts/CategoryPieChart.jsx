@@ -39,11 +39,16 @@ export default function CategoryPieChart() {
       {
         data: data.map((d) => d.total),
         backgroundColor: [
-          "#065f46",
-          "#047857",
-          "#10b981",
-          "#34d399",
-          "#6ee7b7",
+          "#3b82f6", // blue
+          "#ef4444", // red
+          "#10b981", // green
+          "#f59e0b", // amber
+          "#8b5cf6", // purple
+          "#ec4899", // pink
+          "#06b6d4", // cyan
+          "#e11d48", // rose
+          "#14b8a6", // teal
+          "#f97316", // orange
         ],
         borderWidth: 0,
       },
@@ -61,7 +66,7 @@ export default function CategoryPieChart() {
         </p>
       </div>
 
-      <div className="h-[260px] rounded-xl2 bg-app-soft p-3 sm:h-[300px] sm:p-4">
+      <div className="h-[260px] rounded-xl2 bg-gradient-to-br from-app-soft to-app-bg p-3 sm:h-[300px] sm:p-4">
         <Pie data={chartData} options={{ maintainAspectRatio: false }} />
       </div>
     </section>

@@ -14,14 +14,13 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
-   const handleSend = async (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim() || loading) return;
 
     const text = input;
     setInput("");
 
-    // add user message immediately
     setMessages((prev) => [...prev, { sender: "user", text }]);
 
     const token = localStorage.getItem("token");
@@ -62,7 +61,7 @@ export default function Chat() {
         ...prev,
         { sender: "bot", text: data.reply ?? "(No reply returned)" },
       ]);
-    } catch (err) {
+    } catch {
       setMessages((prev) => [
         ...prev,
         { sender: "bot", text: "I can’t reach the backend right now." },
@@ -73,39 +72,50 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
+    <div className="flex h-full flex-col bg-app-bg text-app-text">
       {/* Header */}
-      <div className="bg-wisegreen text-white p-4 text-lg font-semibold shadow-md flex items-center gap-2">
-        <img src={owlLogo} alt="WiseCents Owl" className="w-12 h-12 rounded-full" />
-        WiseCents AI Chat
+      <div className="flex items-center gap-3 border-b border-app-border bg-app-surface px-5 py-4 shadow-sm">
+        <img
+          src={owlLogo}
+          alt="WiseCents Owl"
+          className="h-10 w-10 rounded-full"
+        />
+        <div>
+          <h1 className="text-lg font-semibold">WiseCents AI Chat</h1>
+          <p className="text-sm text-app-muted">
+            Your personal finance assistant
+          </p>
+        </div>
       </div>
 
       {/* Chat Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 space-y-4 overflow-y-auto p-4">
         {messages.map((msg, i) => (
           <div
             key={i}
-            className={`flex items-end ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+            className={`flex items-end ${
+              msg.sender === "user" ? "justify-end" : "justify-start"
+            }`}
           >
             {msg.sender === "bot" && (
               <img
                 src={owlLogo}
-                alt="WiseCents Bot"
-                className="w-12 h-12 rounded-full mr-2 border border-gray-200"
+                alt="Bot"
+                className="mr-2 h-9 w-9 rounded-full border border-app-border"
               />
             )}
 
             <div
-              className={`max-w-xs md:max-w-md px-4 py-2 rounded-2xl text-sm shadow ${
+              className={`max-w-xs rounded-2xl px-4 py-2 text-sm shadow-card md:max-w-md ${
                 msg.sender === "user"
-                  ? "bg-wiseyellow text-black rounded-br-none"
-                  : "bg-white border border-gray-200 rounded-bl-none"
+                  ? "bg-app-primary text-white rounded-br-none"
+                  : "bg-app-surface border border-app-border rounded-bl-none"
               }`}
             >
               <ReactMarkdown>{msg.text}</ReactMarkdown>
             </div>
 
-            {msg.sender === "user" && <div className="w-8" />}
+            {msg.sender === "user" && <div className="w-2" />}
           </div>
         ))}
 
@@ -113,10 +123,10 @@ export default function Chat() {
           <div className="flex items-end justify-start">
             <img
               src={owlLogo}
-              alt="WiseCents Bot"
-              className="w-12 h-12 rounded-full mr-2 border border-gray-200"
+              alt="Bot"
+              className="mr-2 h-9 w-9 rounded-full border border-app-border"
             />
-            <div className="bg-white border border-gray-200 px-4 py-2 rounded-2xl text-sm shadow rounded-bl-none">
+            <div className="rounded-2xl rounded-bl-none border border-app-border bg-app-surface px-4 py-2 text-sm shadow-card">
               Thinking…
             </div>
           </div>
@@ -124,18 +134,22 @@ export default function Chat() {
       </div>
 
       {/* Input Area */}
-      <form onSubmit={handleSend} className="p-4 bg-white border-t border-gray-200 flex gap-2">
+      <form
+        onSubmit={handleSend}
+        className="flex gap-2 border-t border-app-border bg-app-surface p-4"
+      >
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask WiseCents something..."
-          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-wisegreen"
+          className="flex-1 rounded-xl border border-app-border bg-app-bg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-app-primary"
         />
+
         <button
           type="submit"
           disabled={loading}
-          className="bg-wisegreen text-white px-4 py-2 rounded-lg hover:bg-green-700 transition disabled:opacity-60"
+          className="rounded-xl bg-app-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-app-primaryHover disabled:opacity-60"
         >
           Send
         </button>
