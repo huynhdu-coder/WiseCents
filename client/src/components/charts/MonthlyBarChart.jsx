@@ -81,7 +81,7 @@ export default function MonthlyBarChart({ filters }) {
     return () => observer.disconnect();
   }, []);
 
-  const theme = useMemo(() => getThemeColors(), [themeTick]);
+  const theme = getThemeColors();
 
   const months = useMemo(() => Object.keys(data || {}).sort(), [data]);
 
