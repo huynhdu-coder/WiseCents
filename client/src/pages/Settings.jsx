@@ -287,7 +287,7 @@ return (
     </div>
 
     {/* AI Preferences */}
-    {aiConsent === "opt-in" && (
+      {aiConsent === "opt-in" && (
       <form
         onSubmit={handleSubmit}
         className="bg-app-surface p-6 rounded-xl shadow-card border border-app-border"
@@ -296,30 +296,108 @@ return (
           AI Preferences
         </h2>
 
-        <select
-          value={preferences.primary_intent}
-          onChange={(e) =>
-            setPreferences({ ...preferences, primary_intent: e.target.value })
-          }
-          className="w-full border border-app-border rounded-lg px-3 py-2 text-sm bg-app-bg"
-        >
-          <option value="save_more">Save More</option>
-          <option value="reduce_debt">Reduce Debt</option>
-          <option value="general_budgeting">Budgeting</option>
-        </select>
+        <div className="mb-6">
+          <label className="block text-app-text font-semibold mb-2">
+            What's your primary financial goal?
+          </label>
+          <select
+            value={preferences.primary_intent}
+            onChange={(e) =>
+              setPreferences({
+                ...preferences,
+                primary_intent: e.target.value,
+              })
+            }
+            className="w-full border border-app-border rounded-lg px-3 py-2 text-sm bg-app-bg text-app-text focus:outline-none focus:ring-2 focus:ring-app-primary"
+          >
+            <option value="save_more">Save More Money</option>
+            <option value="reduce_debt">Reduce Debt</option>
+            <option value="investment_planning">Investment Planning</option>
+            <option value="expense_tracking">Track Expenses</option>
+            <option value="general_budgeting">General Budgeting</option>
+            <option value="retirement_planning">Retirement Planning</option>
+          </select>
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-app-text font-semibold mb-2">
+            How should the AI advisor communicate?
+          </label>
+          <select
+            value={preferences.advice_style}
+            onChange={(e) =>
+              setPreferences({
+                ...preferences,
+                advice_style: e.target.value,
+              })
+            }
+            className="w-full border border-app-border rounded-lg px-3 py-2 text-sm bg-app-bg text-app-text focus:outline-none focus:ring-2 focus:ring-app-primary"
+          >
+            <option value="motivational">Motivational & Encouraging</option>
+            <option value="balanced">Balanced (Default)</option>
+            <option value="analytical">Analytical & Data-Driven</option>
+            <option value="strict">Strict & Direct</option>
+            <option value="casual">Casual & Friendly</option>
+          </select>
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-app-text font-semibold mb-2">
+            How aggressive should budget recommendations be?
+          </label>
+          <select
+            value={preferences.change_tolerance}
+            onChange={(e) =>
+              setPreferences({
+                ...preferences,
+                change_tolerance: e.target.value,
+              })
+            }
+            className="w-full border border-app-border rounded-lg px-3 py-2 text-sm bg-app-bg text-app-text focus:outline-none focus:ring-2 focus:ring-app-primary"
+          >
+            <option value="conservative">
+              Conservative - Small, gradual changes
+            </option>
+            <option value="moderate">Moderate - Balanced approach</option>
+            <option value="aggressive">Aggressive - Significant changes</option>
+            <option value="very_aggressive">
+              Very Aggressive - Maximum savings
+            </option>
+          </select>
+        </div>
 
         {message && (
-          <div className="mt-3 text-sm text-app-muted">{message}</div>
+          <div
+            className={`mt-3 text-sm ${
+              message.includes("✅")
+                ? "text-green-600"
+                : "text-red-500"
+            }`}
+          >
+            {message}
+          </div>
         )}
 
         <button
           type="submit"
           disabled={loading}
-          className="mt-4 bg-app-primary text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-app-primaryHover"
+          className="mt-4 bg-app-primary text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-app-primaryHover disabled:opacity-50"
         >
           {loading ? "Saving..." : "Save Preferences"}
         </button>
       </form>
+    )}
+
+    {aiConsent === "opt-out" && (
+      <div className="bg-app-surface p-6 rounded-xl shadow-card border border-app-border text-center">
+        <p className="text-2xl mb-2">🔒</p>
+        <p className="text-app-text font-semibold text-sm">
+          AI Preferences are hidden.
+        </p>
+        <p className="text-app-muted text-xs mt-1">
+          Opt in to AI data use above to unlock personalized preference settings.
+        </p>
+      </div>
     )}
   </div>
 );
