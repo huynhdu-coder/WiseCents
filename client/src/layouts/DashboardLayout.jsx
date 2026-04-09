@@ -14,13 +14,15 @@ export default function DashboardLayout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    api.get("/subscription")
+    api
+      .get("/subscription")
       .then((res) => {
         setSubscription(res.data);
 
         if (
           location.pathname !== "/dashboard/subscription" &&
-          (res.data.subscription_status === "expired" || res.data.show_trial_warning)
+          (res.data.subscription_status === "expired" ||
+            res.data.show_trial_warning)
         ) {
           setShowPopup(true);
         } else {
@@ -75,7 +77,7 @@ export default function DashboardLayout() {
 
             <button
               onClick={handleViewPlans}
-              className="rounded bg-wisegreen px-4 py-2 text-white"
+              className="rounded bg-app-primary px-4 py-2 text-white hover:bg-app-primaryHover"
             >
               View Plans
             </button>
