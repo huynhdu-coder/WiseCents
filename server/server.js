@@ -11,6 +11,7 @@ import goalRoutes from "./routes/goalRoutes.js";
 import investmentRoutes from "./routes/investmentRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import studentVerificationRoutes from "./routes/studentVerificationRoutes.js";
+import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import { startDigestCron } from "./services/digestService.js";
 import "dotenv/config";
 
@@ -61,6 +62,7 @@ app.use("/api/student-verification", studentVerificationRoutes);
 app.use("/api/plaid", plaidRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/accounts", accountRoutes);
+app.use("/api/subscription", subscriptionRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/goals", goalRoutes);
 app.use("/api/investments", investmentRoutes);

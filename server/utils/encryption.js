@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 const ALGORITHM = "aes-256-gcm";
-const key = Buffer.from(process.env.ENCRYPTION_KEY, "hex");
+const key = Buffer.from(process.env.ENCRYPTION_KEY, "base64");
 
 export function encrypt(text) {
   const iv = crypto.randomBytes(16);

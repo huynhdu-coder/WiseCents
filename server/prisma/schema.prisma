@@ -107,6 +107,12 @@ model users {
   student_status              String?                       @default("none") @db.VarChar(20)
   student_verified_at         DateTime?                     @db.Timestamp(6)
   student_discount_percent    Int?                          @default(0)
+  subscription_type           String?                       @default("free") @db.VarChar(20)
+  subscription_status         String?                       @default("trial") @db.VarChar(20)
+  trial_start                 DateTime?                     @default(now()) @db.Timestamp(6)
+  trial_end                   DateTime?                     @default(dbgenerated("(now() + '10 days'::interval)")) @db.Timestamp(6)
+  student_verified            Boolean?                      @default(false)
+  student_discount_active     Boolean?                      @default(false)
   bank_accounts               bank_accounts[]
   goals                       goals[]
   investment_transfers        investment_transfers[]
