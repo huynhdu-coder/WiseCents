@@ -10,8 +10,9 @@ export default function Sidebar() {
       <nav className="flex flex-col gap-4">
         <NavLink to="/dashboard" end className={navClass}>Dashboard</NavLink>
         <NavLink to="/dashboard/reports" className={navClass}>Reports</NavLink>
-        <NavLink to="/dashboard/chat" className={navClass}>AI Chat</NavLink>
+        <NavLink to="/dashboard/chat" className={navClass}>Wise Assistant</NavLink>
         <NavLink to="/dashboard/investments" className={navClass}>Investments</NavLink>
+        <NavLink to="/dashboard/subscription" className={navClass}>Subscription</NavLink>
         <NavLink to="/dashboard/settings" className={navClass}>Settings</NavLink>
       </nav>
     </aside>

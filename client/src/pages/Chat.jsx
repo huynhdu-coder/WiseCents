@@ -77,7 +77,7 @@ export default function Chat() {
       {/* Header */}
       <div className="bg-wisegreen text-white p-4 text-lg font-semibold shadow-md flex items-center gap-2">
         <img src={owlLogo} alt="WiseCents Owl" className="w-12 h-12 rounded-full" />
-        WiseCents AI Chat
+        Wise Assistant
       </div>
 
       {/* Chat Area */}
