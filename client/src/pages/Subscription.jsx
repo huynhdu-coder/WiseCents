@@ -240,7 +240,7 @@ export default function Subscription() {
                       disabled={activating}
                       className="rounded border border-app-border bg-app-surface px-4 py-2 text-app-text hover:bg-app-soft disabled:opacity-50"
                     >
-                      {activating ? "Saving..." : "Cancel to Free"}
+                      {activating ? "Saving..." : "Downgrade / Cancel Subscription"}
                     </button>
                   ) : (
                     <span className="text-sm text-app-muted">Current plan</span>
@@ -270,7 +270,7 @@ export default function Subscription() {
                       onClick={() => openPaymentModal("standard")}
                       className="rounded bg-app-primary px-4 py-2 text-white hover:bg-app-primaryHover"
                     >
-                      Activate Full
+                      Sign up for Full Access
                     </button>
                   ) : (
                     <span className="text-sm text-app-muted">Current plan</span>
@@ -305,7 +305,7 @@ export default function Subscription() {
                       disabled={activating}
                       className="rounded bg-app-primary px-4 py-2 text-white hover:bg-app-primaryHover disabled:opacity-50"
                     >
-                      {activating ? "Activating..." : "Activate Student"}
+                      {activating ? "Activating..." : "Verify Email Address for Student Discount"}
                     </button>
                   ) : showVerifyStudent ? (
                     <button
@@ -314,7 +314,7 @@ export default function Subscription() {
                       disabled={verifying}
                       className="rounded border border-app-border bg-app-surface px-4 py-2 text-app-text hover:bg-app-soft disabled:opacity-50"
                     >
-                      {verifying ? "Verifying..." : "Verify for Student"}
+                      {verifying ? "Verifying..." : "Verify Email Address for Student Discount"}
                     </button>
                   ) : (
                     <span className="text-sm text-app-muted">Unavailable</span>
