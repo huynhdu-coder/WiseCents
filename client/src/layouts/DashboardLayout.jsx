@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-import Topbar from "../components/Topbar";
 import AIChatWidget from "../components/AIChatWidget";
 import AlertToasts from "../components/AlertToasts";
 import api from "../api/axios";
