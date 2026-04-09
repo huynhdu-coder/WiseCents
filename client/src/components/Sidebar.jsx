@@ -12,7 +12,7 @@ export default function Sidebar() {
         <NavLink to="/dashboard/reports" className={navClass}>Reports</NavLink>
         <NavLink to="/dashboard/chat" className={navClass}>Wise Assistant</NavLink>
         <NavLink to="/dashboard/investments" className={navClass}>Investments</NavLink>
-        <NavLink to="/dashboard/subscription" className={navClass}>Subscription</NavLink>
+        <NavLink to="/dashboard/subscription" className={navClass}>Subscriptions</NavLink>
         <NavLink to="/dashboard/settings" className={navClass}>Settings</NavLink>
       </nav>
     </aside>

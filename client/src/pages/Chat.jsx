@@ -7,7 +7,7 @@ export default function Chat() {
   const [messages, setMessages] = useState([
     {
       sender: "bot",
-      text: "Hi! I’m WiseCents, your personal finance assistant. Ask me anything about your spending, saving, or goals!",
+      text: "Hello, I am your Wise Assistant! Ask me anything about goals, concerns, or personal finances.",
     },
   ]);
 
@@ -72,7 +72,7 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex h-full flex-col bg-app-bg text-app-text">
+    <div className="flex h-full min-h-0 flex-col bg-app-bg text-app-text">
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-app-border bg-app-surface px-5 py-4 shadow-sm">
         <img
@@ -89,7 +89,7 @@ export default function Chat() {
       </div>
 
       {/* Chat Area */}
-      <div className="flex-1 space-y-4 overflow-y-auto p-4">
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
         {messages.map((msg, i) => (
           <div
             key={i}

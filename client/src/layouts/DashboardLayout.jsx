@@ -41,10 +41,16 @@ export default function DashboardLayout() {
         <Sidebar />
 
         <div className="min-w-0 flex-1">
-          <main className="h-full overflow-y-auto">
-            <div className="mx-auto max-w-[1400px] px-4 py-4 sm:px-5 lg:px-6">
-              <Outlet />
-            </div>
+          <main className="h-full overflow-hidden">
+            {location.pathname === "/dashboard/chat" ? (
+              <div className="h-full">
+                <Outlet />
+              </div>
+            ) : (
+              <div className="mx-auto h-full max-w-[1400px] overflow-y-auto px-4 py-4 sm:px-5 lg:px-6">
+                <Outlet />
+              </div>
+            )}
           </main>
         </div>
       </div>
@@ -53,15 +59,15 @@ export default function DashboardLayout() {
       <AlertToasts />
 
       {showPopup && subscription && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm text-center">
-            <h2 className="text-lg font-semibold mb-2">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="max-w-sm rounded-xl bg-white p-6 text-center shadow-lg">
+            <h2 className="mb-2 text-lg font-semibold">
               {subscription.subscription_status === "expired"
                 ? "Trial Expired"
                 : "Trial Ending Soon"}
             </h2>
 
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="mb-4 text-sm text-gray-600">
               {subscription.subscription_status === "expired"
                 ? "Your free trial has ended. Upgrade to continue full access."
                 : `Your free trial ends in ${subscription.trial_days_left} day(s). Choose a plan to avoid interruption.`}
@@ -69,14 +75,14 @@ export default function DashboardLayout() {
 
             <button
               onClick={handleViewPlans}
-              className="bg-wisegreen text-white px-4 py-2 rounded"
+              className="rounded bg-wisegreen px-4 py-2 text-white"
             >
               View Plans
             </button>
 
             <button
               onClick={() => setShowPopup(false)}
-              className="block mt-2 text-sm text-gray-500 mx-auto"
+              className="mx-auto mt-2 block text-sm text-gray-500"
             >
               Dismiss
             </button>

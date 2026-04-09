@@ -155,7 +155,7 @@ export default function Subscription() {
 
   return (
     <div className="max-w-5xl space-y-8">
-      <h1 className="text-2xl font-bold text-wisegreen">Subscription</h1>
+      <h1 className="text-2xl font-bold text-wisegreen">Subscription Plans</h1>
 
       <div className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-lg font-semibold text-wisegreen mb-1">Current Plan</h2>
