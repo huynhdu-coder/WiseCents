@@ -11,6 +11,7 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
 import Chat from "./pages/Chat";
 import Reports from "./pages/Reports.jsx";
+import Subscription from "./pages/Subscription";
 import Settings from "./pages/Settings";
 import InvestmentsPage from "./pages/Investments.jsx";
 
@@ -45,6 +46,7 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="chat" element={<Chat />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="subscription" element={<Subscription />} />
             <Route path="investments" element={<InvestmentsPage />} />
             <Route path="settings" element={<Settings />} />
           </Route>
