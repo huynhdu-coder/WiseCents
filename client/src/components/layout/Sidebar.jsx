@@ -6,6 +6,7 @@ import {
   HiOutlineBanknotes,
   HiOutlineCog6Tooth,
   HiOutlineArrowLeftOnRectangle,
+  HiOutlineCreditCard,
 } from "react-icons/hi2";
 import ThemeToggle from "../ui/ThemeToggle";
 import owlImage from "../../assets/owl-logo.png";
@@ -15,6 +16,7 @@ const navItems = [
   { label: "Reports", to: "/dashboard/reports", icon: HiOutlineChartBar },
   { label: "AI Chat", to: "/dashboard/chat", icon: HiOutlineChatBubbleLeftRight },
   { label: "Investments", to: "/dashboard/investments", icon: HiOutlineBanknotes },
+  { label: "Subscriptions", to: "/dashboard/subscription", icon: HiOutlineCreditCard },
   { label: "Settings", to: "/dashboard/settings", icon: HiOutlineCog6Tooth },
 ];
 
@@ -30,7 +32,7 @@ export default function Sidebar() {
       <div>
         <div className="mb-8 flex items-center gap-3 px-2">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-2xl">
-            <img src={owlImage} alt="WiseCents Owl" className="w-15 h-15" />
+            <img src={owlImage} alt="WiseCents Owl" className="h-15 w-15" />
           </div>
           <div>
             <h2 className="text-2xl font-bold leading-tight">WiseCents</h2>

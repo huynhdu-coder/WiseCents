@@ -72,9 +72,9 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex h-full flex-col bg-app-bg text-app-text">
+    <div className="flex h-screen flex-col overflow-hidden bg-app-bg text-app-text">
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-app-border bg-app-surface px-5 py-4 shadow-sm">
+      <div className="flex items-center gap-3 border-b border-app-border bg-app-surface px-5 py-4 shadow-sm shrink-0">
         <img
           src={owlLogo}
           alt="WiseCents Owl"
@@ -89,7 +89,7 @@ export default function Chat() {
       </div>
 
       {/* Chat Area */}
-      <div className="flex-1 space-y-4 overflow-y-auto p-4">
+      <div className="flex-1 min-h-0 overflow-y-auto space-y-4 p-4">
         {messages.map((msg, i) => (
           <div
             key={i}
@@ -136,7 +136,7 @@ export default function Chat() {
       {/* Input Area */}
       <form
         onSubmit={handleSend}
-        className="flex gap-2 border-t border-app-border bg-app-surface p-4"
+        className="flex gap-2 border-t border-app-border bg-app-surface p-4 shrink-0"
       >
         <input
           type="text"
@@ -155,5 +155,5 @@ export default function Chat() {
         </button>
       </form>
     </div>
-  );
-}
+  )
+};

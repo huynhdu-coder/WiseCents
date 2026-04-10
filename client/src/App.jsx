@@ -13,6 +13,8 @@ import Chat from "./pages/Chat";
 import Reports from "./pages/Reports.jsx";
 import Settings from "./pages/Settings";
 import InvestmentsPage from "./pages/Investments.jsx";
+import Subscription from "./pages/Subscription.jsx";
+import SubscriptionExpiryBanner from "./components/subscription/SubscriptionExpirationBanner.jsx";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -26,14 +28,17 @@ function ConsentModal() {
 export default function App() {
   return (
     <AuthProvider>
-      <ConsentModal />
       <BrowserRouter>
+        <ConsentModal />
+        <SubscriptionExpiryBanner />
+
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
+
           <Route
             path="/dashboard"
             element={
@@ -47,8 +52,8 @@ export default function App() {
             <Route path="reports" element={<Reports />} />
             <Route path="investments" element={<InvestmentsPage />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="subscription" element={<Subscription />} />
           </Route>
-
         </Routes>
       </BrowserRouter>
     </AuthProvider>
