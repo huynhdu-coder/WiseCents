@@ -14,7 +14,7 @@ import owlImage from "../../assets/owl-logo.png";
 const navItems = [
   { label: "Dashboard", to: "/dashboard", icon: HiOutlineHome },
   { label: "Reports", to: "/dashboard/reports", icon: HiOutlineChartBar },
-  { label: "AI Chat", to: "/dashboard/chat", icon: HiOutlineChatBubbleLeftRight },
+  { label: "Wise Assistant", to: "/dashboard/chat", icon: HiOutlineChatBubbleLeftRight },
   { label: "Investments", to: "/dashboard/investments", icon: HiOutlineBanknotes },
   { label: "Subscriptions", to: "/dashboard/subscription", icon: HiOutlineCreditCard },
   { label: "Settings", to: "/dashboard/settings", icon: HiOutlineCog6Tooth },
