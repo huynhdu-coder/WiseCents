@@ -44,140 +44,133 @@ export default function Register() {
     }
   };
 
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4">
-      <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold text-wisegreen mb-6 text-center">
-          Create your WiseCents account
-        </h2>
+return (
+  <div className="flex min-h-screen items-center justify-center bg-app-bg px-4 text-app-text">
+    <div className="w-full max-w-sm rounded-xl3 border border-app-border bg-app-surface p-8 shadow-card">
+      <h2 className="mb-6 text-center text-2xl font-semibold text-app-text">
+        Create your WiseCents account
+      </h2>
 
-        {error && (
-          <p className="text-red-500 text-sm text-center mb-3">{error}</p>
-        )}
+      {error && (
+        <div className="mb-3 rounded-xl border border-app-danger/30 bg-app-danger/10 px-3 py-2 text-center text-sm text-app-danger">
+          {error}
+        </div>
+      )}
 
-        <form onSubmit={handleRegister} className="space-y-4">
+      <form onSubmit={handleRegister} className="space-y-4">
+        <div>
+          <label className="mb-1 block text-left text-sm font-medium text-app-muted">
+            First Name
+          </label>
+          <input
+            type="text"
+            placeholder="John"
+            className="w-full rounded-xl border border-app-border bg-app-soft px-3 py-2 text-app-text placeholder:text-app-muted focus:outline-none focus:ring-2 focus:ring-app-primary/40"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            required
+          />
+        </div>
 
-          {/* First Name */}
-          <div>
-            <label className="block text-left text-gray-600 text-sm mb-1">
-              First Name
-            </label>
-            <input
-              type="text"
-              placeholder="John"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-wisegreen outline-none"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              required
-            />
-          </div>
+        <div>
+          <label className="mb-1 block text-left text-sm font-medium text-app-muted">
+            Last Name
+          </label>
+          <input
+            type="text"
+            placeholder="Doe"
+            className="w-full rounded-xl border border-app-border bg-app-soft px-3 py-2 text-app-text placeholder:text-app-muted focus:outline-none focus:ring-2 focus:ring-app-primary/40"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            required
+          />
+        </div>
 
-          {/* Last Name */}
-          <div>
-            <label className="block text-left text-gray-600 text-sm mb-1">
-              Last Name
-            </label>
-            <input
-              type="text"
-              placeholder="Doe"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-wisegreen outline-none"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              required
-            />
-          </div>
+        <div>
+          <label className="mb-1 block text-left text-sm font-medium text-app-muted">
+            Email
+          </label>
+          <input
+            type="email"
+            placeholder="your@gmail.com"
+            className="w-full rounded-xl border border-app-border bg-app-soft px-3 py-2 text-app-text placeholder:text-app-muted focus:outline-none focus:ring-2 focus:ring-app-primary/40"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
 
-          {/* Email */}
-          <div>
-            <label className="block text-left text-gray-600 text-sm mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              placeholder="your@gmail.com"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-wisegreen"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+        <div>
+          <label className="mb-1 block text-left text-sm font-medium text-app-muted">
+            Phone
+          </label>
+          <input
+            type="text"
+            placeholder="123-456-7890"
+            className="w-full rounded-xl border border-app-border bg-app-soft px-3 py-2 text-app-text placeholder:text-app-muted focus:outline-none focus:ring-2 focus:ring-app-primary/40"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+        </div>
 
-          {/* Phone */}
-          <div>
-            <label className="block text-left text-gray-600 text-sm mb-1">
-              Phone
-            </label>
-            <input
-              type="text"
-              placeholder="123-456-7890"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-wisegreen"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-          </div>
+        <div>
+          <label className="mb-1 block text-left text-sm font-medium text-app-muted">
+            Date of Birth
+          </label>
+          <input
+            type="date"
+            className="w-full rounded-xl border border-app-border bg-app-soft px-3 py-2 text-app-text focus:outline-none focus:ring-2 focus:ring-app-primary/40"
+            value={dob}
+            onChange={(e) => setDob(e.target.value)}
+          />
+        </div>
 
-          {/* Date of Birth */}
-          <div>
-            <label className="block text-left text-gray-600 text-sm mb-1">
-              Date of Birth
-            </label>
-            <input
-              type="date"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-wisegreen"
-              value={dob}
-              onChange={(e) => setDob(e.target.value)}
-            />
-          </div>
+        <div>
+          <label className="mb-1 block text-left text-sm font-medium text-app-muted">
+            Password
+          </label>
+          <input
+            type="password"
+            placeholder="••••••••"
+            className="w-full rounded-xl border border-app-border bg-app-soft px-3 py-2 text-app-text placeholder:text-app-muted focus:outline-none focus:ring-2 focus:ring-app-primary/40"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
 
-          {/* Password */}
-          <div>
-            <label className="block text-left text-gray-600 text-sm mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-wisegreen outline-none"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+        <div>
+          <label className="mb-1 block text-left text-sm font-medium text-app-muted">
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            placeholder="••••••••"
+            className="w-full rounded-xl border border-app-border bg-app-soft px-3 py-2 text-app-text placeholder:text-app-muted focus:outline-none focus:ring-2 focus:ring-app-primary/40"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+        </div>
 
-          {/* Confirm Password */}
-          <div>
-            <label className="block text-left text-gray-600 text-sm mb-1">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-wisegreen outline-none"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-          </div>
+        <button
+          type="submit"
+          className="w-full rounded-xl bg-app-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-app-primaryHover"
+        >
+          Create Account
+        </button>
+      </form>
 
-          {/* Submit */}
-          <button
-            type="submit"
-            className="w-full bg-wisegreen text-white py-2 rounded-lg hover:bg-wisegreen/80 transition"
-          >
-            Create Account
-          </button>
-        </form>
-
-        <p className="text-gray-500 text-sm text-center mt-6">
-          Already have an account?{" "}
-          <span
-            onClick={() => navigate("/login")}
-            className="text-wisegreen font-semibold cursor-pointer hover:underline"
-          >
-            Login
-          </span>
-        </p>
-      </div>
+      <p className="mt-6 text-center text-sm text-app-muted">
+        Already have an account?{" "}
+        <span
+          onClick={() => navigate("/login")}
+          className="cursor-pointer font-semibold text-app-primary transition hover:text-app-primaryHover hover:underline"
+        >
+          Login
+        </span>
+      </p>
     </div>
-  );
+  </div>
+);
 }

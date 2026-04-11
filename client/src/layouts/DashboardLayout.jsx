@@ -12,18 +12,16 @@ export default function DashboardLayout() {
       <div className="flex h-full">
         <Sidebar />
 
-        <div className="min-w-0 flex-1">
-          <main className="h-full overflow-hidden">
-            {routerLocation.pathname === "/dashboard/chat" ? (
-              <div className="h-full">
-                <Outlet />
-              </div>
-            ) : (
-              <div className="mx-auto h-full max-w-[1400px] overflow-y-auto px-4 py-4 sm:px-5 lg:px-6">
-                <Outlet />
-              </div>
-            )}
-          </main>
+        <div className="min-w-0 flex-1 overflow-y-auto">
+          {routerLocation.pathname === "/dashboard/chat" ? (
+            <div className="h-full">
+              <Outlet />
+            </div>
+          ) : (
+            <main className="mx-auto max-w-[1400px] px-4 py-4 sm:px-5 lg:px-6">
+              <Outlet />
+            </main>
+          )}
         </div>
       </div>
 
