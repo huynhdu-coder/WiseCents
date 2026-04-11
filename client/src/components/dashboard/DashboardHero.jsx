@@ -15,7 +15,7 @@ export default function DashboardHero() {
             Dashboard
           </h1>
           <p className="mt-1 text-sm text-app-muted">
-            Welcome back {firstName}
+            Welcome back, {firstName}
           </p>
         </div>
 
